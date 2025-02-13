@@ -143,8 +143,6 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
     public async Task<SearchDialogResult> Handle(SearchDialogQuery request, CancellationToken cancellationToken)
     {
-        var currentUserInfo = await _userRegistry.GetCurrentUserInformation(cancellationToken);
-
         var searchExpression = Expressions.LocalizedSearchExpression(request.Search, request.SearchLanguageCode);
         var authorizedResources = await _altinnAuthorization.GetAuthorizedResourcesForSearch(
             request.Party ?? [],
@@ -187,7 +185,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         foreach (var seenLog in paginatedList.Items.SelectMany(x => x.SeenSinceLastUpdate))
         {
-            seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(currentUserInfo.UserId.ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
+            seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(_userRegistry.GetCurrentUserId().ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
         return paginatedList.ConvertTo(_mapper.Map<DialogDto>);

@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Domain.Parties;
 using Digdir.Domain.Dialogporten.Domain.Parties.Abstractions;
 using UserIdType = Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.DialogUserType.Values;
@@ -27,12 +28,6 @@ public static class ClaimsPrincipalExtensions
     private const string ScopeClaim = "scope";
     private const char ScopeClaimSeparator = ' ';
     private const string PidClaim = "pid";
-
-
-    // TODO: This scope is also defined in WebAPI/GQL. Can this be fetched from a common auth lib?
-    // https://github.com/altinn/dialogporten/issues/647
-    // This could be done for all claims/scopes/prefixes etc, there are duplicates
-    public const string ServiceProviderScope = "digdir:dialogporten.serviceprovider";
 
     public static bool TryGetClaimValue(this ClaimsPrincipal claimsPrincipal, string claimType,
         [NotNullWhen(true)] out string? value)
@@ -173,7 +168,7 @@ public static class ClaimsPrincipalExtensions
 
         orgNumber = id.Split(IdDelimiter) switch
         {
-        [IdPrefix, var on] => NorwegianOrganizationIdentifier.IsValid(on) ? on : null,
+            [IdPrefix, var on] => NorwegianOrganizationIdentifier.IsValid(on) ? on : null,
             _ => null
         };
 
@@ -233,7 +228,7 @@ public static class ClaimsPrincipalExtensions
     {
         if (claimsPrincipal.TryGetPid(out var externalId))
         {
-            return (claimsPrincipal.HasScope(ServiceProviderScope)
+            return (claimsPrincipal.HasScope(AuthorizationScope.ServiceProvider)
                 ? UserIdType.ServiceOwnerOnBehalfOfPerson
                 : UserIdType.Person, externalId);
         }
@@ -244,7 +239,7 @@ public static class ClaimsPrincipalExtensions
             return (UserIdType.SystemUser, externalId);
         }
 
-        if (claimsPrincipal.HasScope(ServiceProviderScope) &&
+        if (claimsPrincipal.HasScope(AuthorizationScope.ServiceProvider) &&
             claimsPrincipal.TryGetOrganizationNumber(out externalId))
         {
             return (UserIdType.ServiceOwner, externalId);
@@ -261,12 +256,12 @@ public static class ClaimsPrincipalExtensions
         var (userType, externalId) = claimsPrincipal.GetUserType();
         return userType switch
         {
-            UserIdType.ServiceOwnerOnBehalfOfPerson or UserIdType.Person => NorwegianPersonIdentifier.TryParse(externalId, out var personId)
-                                ? personId
-                                : null,
-            UserIdType.SystemUser => SystemUserIdentifier.TryParse(externalId, out var systemUserId)
-                                ? systemUserId
-                                : null,
+            UserIdType.ServiceOwnerOnBehalfOfPerson or UserIdType.Person
+                => NorwegianPersonIdentifier.TryParse(externalId, out var personId)
+                    ? personId : null,
+            UserIdType.SystemUser
+                => SystemUserIdentifier.TryParse(externalId, out var systemUserId)
+                    ? systemUserId : null,
             UserIdType.Unknown => null,
             UserIdType.ServiceOwner => null,
             _ => null

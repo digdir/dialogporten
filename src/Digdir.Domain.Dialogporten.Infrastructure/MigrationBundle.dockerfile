@@ -1,7 +1,7 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0.1@sha256:07dd7f0c45263fee87e094b1e627b33a095f75c54be39c495de23b82b0936b9e AS base
+﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0.2@sha256:adc89f84d53514cdc17677f3334775879d80d08ac8997a4b3fba8d20a6d6de9d AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0.102@sha256:84fd557bebc64015e731aca1085b92c7619e49bdbe247e57392a43d92276f617 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0.200@sha256:7f8e8b1514a2eeccb025f1e9dd554e191b21afa7f43f8321b7bd2009cdd59a1d AS build
 WORKDIR /src
 
 RUN dotnet tool install --global dotnet-ef
@@ -30,4 +30,4 @@ ENV Infrastructure__DialogDbConnectionString=""
 WORKDIR /app
 USER $APP_UID
 COPY --from=build /app/publish .
-ENTRYPOINT ./efbundle -v --connection "${Infrastructure__DialogDbConnectionString}"
+ENTRYPOINT ./efbundle -v --connection "${Infrastructure__DialogDbConnectionString}Command Timeout=0;"

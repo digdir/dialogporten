@@ -25,7 +25,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.Application\Digdir.Domain.Dialogporten.Application.csproj" />
-      <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.ChangeDataCapture\Digdir.Domain.Dialogporten.ChangeDataCapture.csproj" />
       <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.Domain\Digdir.Domain.Dialogporten.Domain.csproj" />
       <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.GraphQL\Digdir.Domain.Dialogporten.GraphQL.csproj" />
       <ProjectReference Include="..\..\src\Digdir.Domain.Dialogporten.Infrastructure\Digdir.Domain.Dialogporten.Infrastructure.csproj" />

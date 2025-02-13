@@ -1,4 +1,4 @@
-import { default as run } from "./serviceowner-search.js";
+import { default as run, options as _options } from "./serviceowner-search.js";
 export { setup as setup } from '../../performancetest_common/readTestdata.js';
 
 export let options = {
@@ -6,18 +6,15 @@ export let options = {
     vus: 1,
     duration: "30s",
     thresholds: {
+        ..._options.thresholds,
         "http_req_duration{name:serviceowner search}": ["p(95)<100", "p(99)<300"],
+        "http_req_duration{name:get dialog}": ["p(95)<100", "p(99)<300"],
         "http_req_duration{name:get dialog activities}": ["p(95)<100", "p(99)<300"],
         "http_req_duration{name:get dialog activity}": ["p(95)<100", "p(99)<300"],
         "http_req_duration{name:get seenlogs}": ["p(95)<100", "p(99)<300"],
+        "http_req_duration{name:get seenlog}": ["p(95)<100", "p(99)<300"],
         "http_req_duration{name:get transmissions}": ["p(95)<100", "p(99)<300"],
         "http_req_duration{name:get transmission}": ["p(95)<100", "p(99)<300"],
-        "http_reqs{name:get dialog activities}": [],
-        "http_reqs{name:get dialog activity}": [],
-        "http_reqs{name:get seenlogs}": [],
-        "http_reqs{name:get transmissions}": [],
-        "http_reqs{name:get transmission}": [],
-        "http_reqs{name:serviceowner search}": [],   
     }
 }
 

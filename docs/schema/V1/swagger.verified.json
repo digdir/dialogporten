@@ -327,6 +327,20 @@
         },
         "type": "object"
       },
+      "V1Common_dFilter": {
+        "description": "",
+        "enum": [
+          "Exclude",
+          "Include",
+          "Only"
+        ],
+        "type": "string",
+        "x-enumNames": [
+          "Exclude",
+          "Include",
+          "Only"
+        ]
+      },
       "V1CommonContent_ContentValue": {
         "additionalProperties": false,
         "properties": {
@@ -2352,6 +2366,11 @@
             "nullable": true,
             "type": "string"
           },
+          "idempotentKey": {
+            "description": "An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.",
+            "nullable": true,
+            "type": "string"
+          },
           "party": {
             "description": "The party code representing the organization or person that the dialog belongs to in URN format.",
             "example": "urn:altinn:person:identifier-no:01125512345\nurn:altinn:organization:identifier-no:912345678",
@@ -3451,6 +3470,11 @@
             "format": "guid",
             "type": "string"
           },
+          "idempotentKey": {
+            "description": "An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.\n            ",
+            "nullable": true,
+            "type": "string"
+          },
           "org": {
             "description": "The service owner code representing the organization (service owner) related to this dialog.",
             "example": "ske",
@@ -4071,6 +4095,12 @@
             "description": "The date and time when the dialog was created.",
             "example": "2022-12-31T23:59:59Z",
             "format": "date-time",
+            "type": "string"
+          },
+          "deletedAt": {
+            "description": "If deleted, the date and time when the deletion was performed.",
+            "format": "date-time",
+            "nullable": true,
             "type": "string"
           },
           "dueAt": {
@@ -5070,7 +5100,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           }
         },
         "security": [
@@ -5689,6 +5719,19 @@
             "style": "form"
           },
           {
+            "description": "If set to \u0027include\u0027, the result will include both deleted and non-deleted dialogs\nIf set to \u0027exclude\u0027, the result will only include non-deleted dialogs\nIf set to \u0027only\u0027, the result will only include deleted dialogs",
+            "in": "query",
+            "name": "deleted",
+            "schema": {
+              "allOf": [
+                {
+                  "$ref": "#/components/schemas/V1Common_dFilter"
+                }
+              ],
+              "nullable": true
+            }
+          },
+          {
             "description": "Only return dialogs created after this date",
             "in": "query",
             "name": "createdAfter",
@@ -5924,6 +5967,9 @@
           "403": {
             "description": "Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy)."
           },
+          "409": {
+            "description": "Dialog with IdempotentKey 01941821-ffca-73a1-9335-435a882be014 has already been created."
+          },
           "422": {
             "content": {
               "application/problem\u002Bjson": {
@@ -6007,7 +6053,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6081,7 +6127,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           }
         },
         "security": [
@@ -6276,7 +6322,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6355,7 +6401,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "412": {
             "content": {
@@ -6374,6 +6420,72 @@
           }
         ],
         "summary": "Permanently deletes a dialog",
+        "tags": [
+          "Serviceowner"
+        ]
+      }
+    },
+    "/api/v1/serviceowner/dialogs/{dialogId}/actions/restore": {
+      "post": {
+        "description": "Restore a dialog. For more information see the documentation (link TBD). ",
+        "operationId": "V1ServiceOwnerDialogsRestore_RestoreDialog",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dialogId",
+            "required": true,
+            "schema": {
+              "format": "guid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "if-Match",
+            "schema": {
+              "format": "guid",
+              "nullable": true,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "The dialog aggregate was restored successfully."
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The given dialog ID was not found."
+          },
+          "412": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied."
+          }
+        },
+        "security": [
+          {
+            "JWTBearerAuth": []
+          }
+        ],
+        "summary": "Restore a dialog",
         "tags": [
           "Serviceowner"
         ]
@@ -6586,7 +6698,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6732,7 +6844,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6798,7 +6910,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6858,7 +6970,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
@@ -6958,7 +7070,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or is already deleted."
+            "description": "The given dialog ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."

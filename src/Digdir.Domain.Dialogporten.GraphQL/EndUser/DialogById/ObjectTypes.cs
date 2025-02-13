@@ -5,7 +5,7 @@ namespace Digdir.Domain.Dialogporten.GraphQL.EndUser.DialogById;
 [InterfaceType("DialogByIdError")]
 public interface IDialogByIdError
 {
-    public string Message { get; set; }
+    string Message { get; set; }
 }
 
 public sealed class DialogByIdNotFound : IDialogByIdError

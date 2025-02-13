@@ -42,6 +42,9 @@ param sshJumperAdminLoginGroupObjectId string
 @description('The URL of the APIM instance')
 param apimUrl string
 
+@description('Whether to purge data immediately after 30 days in Application Insights')
+param appInsightsPurgeDataOn30Days bool = false
+
 import { Sku as KeyVaultSku } from '../modules/keyvault/create.bicep'
 param keyVaultSku KeyVaultSku
 
@@ -85,7 +88,7 @@ var tags = {
 }
 
 // Create resource groups
-resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-03-01' = {
+resource resourceGroup 'Microsoft.Resources/resourceGroups@2024-11-01' = {
   name: '${namePrefix}-rg'
   location: location
   tags: tags
@@ -121,6 +124,7 @@ module appInsights '../modules/applicationInsights/create.bicep' = {
     location: location
     sku: appInsightsSku
     tags: tags
+    immediatePurgeDataOn30Days: appInsightsPurgeDataOn30Days
   }
 }
 
