@@ -81,6 +81,5 @@ internal class EdDsaSecurityKeysCacheService : BackgroundService
             .ToList();
 
         _keys = keys;
-
     }
 }

@@ -18,8 +18,9 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
     public DialogTokenVerifier(IOptions<DialogportenSettings> options)
     {
         _kid = options.Value.Ed25519Keys.Primary.Kid;
-        _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
-            Base64Url.DecodeFromChars(options.Value.Ed25519Keys.Primary.PublicComponent), KeyBlobFormat.RawPublicKey);
+        // _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
+        // Base64Url.DecodeFromChars(options.Value.Ed25519Keys.Primary.PublicComponent), KeyBlobFormat.RawPublicKey);
+        _publicKey = EdDsaSecurityKeysCacheService.PublicKeys[0];
     }
     public bool Verify(ReadOnlySpan<char> token)
     {
@@ -54,7 +55,7 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             }
 
             var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
-            if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != _kid)
+            if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != EdDsaSecurityKeysCacheService.PublicKeys[0].Kid)
             {
                 return false;
             }
@@ -64,7 +65,8 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             headerAndBody[header.Length] = (byte)'.';
             body[..bodyLength].CopyTo(headerAndBody[(header.Length + 1)..]);
 
-            if (!SignatureAlgorithm.Ed25519.Verify(_publicKey, headerAndBody, signature))
+            var publicKey = EdDsaSecurityKeysCacheService.PublicKeys[0];
+            if (!SignatureAlgorithm.Ed25519.Verify(publicKey, headerAndBody, signature))
             {
                 return false;
             }
@@ -112,4 +114,3 @@ internal static class DialogTokenClaimTypes
     public const string DialogId = "i";
     public const string Actions = "a";
 }
-
