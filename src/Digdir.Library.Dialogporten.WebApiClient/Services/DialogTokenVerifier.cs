@@ -15,6 +15,12 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
     {
         try // Amund: me no like
         {
+            if (EdDsaSecurityKeysCacheService.PublicKeys.Count == 0)
+            {
+                return false;
+            }
+            var publicKeyPair = EdDsaSecurityKeysCacheService.PublicKeys[0];
+
             var tokenPartEnumerator = token.Split('.');
             if (!tokenPartEnumerator.MoveNext())
             {
@@ -42,8 +48,6 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             {
                 return false;
             }
-
-            var publicKeyPair = EdDsaSecurityKeysCacheService.PublicKeys[0];
             var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
             if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != publicKeyPair.Kid)
             {
