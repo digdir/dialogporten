@@ -4,11 +4,6 @@ using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
 
-public interface IDialogTokenVerifier
-{
-    bool Verify(ReadOnlySpan<char> token);
-}
-
 internal sealed class DialogTokenVerifier : IDialogTokenVerifier
 {
     public bool Verify(ReadOnlySpan<char> token)

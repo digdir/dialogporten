@@ -1,6 +1,6 @@
 using Refit;
 
-namespace Altinn.ApiClients.Dialogporten.Interfaces;
+namespace Altinn.ApiClients.Dialogporten.Infrastructure;
 
 internal interface IInternalDialogportenApi
 {

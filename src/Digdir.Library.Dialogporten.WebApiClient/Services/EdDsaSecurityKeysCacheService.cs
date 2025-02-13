@@ -1,47 +1,83 @@
 using System.Buffers.Text;
 using System.Collections.ObjectModel;
-using System.Net;
-using Altinn.ApiClients.Dialogporten.Config;
-using Altinn.ApiClients.Dialogporten.Interfaces;
+using Altinn.ApiClients.Dialogporten.Common;
+using Altinn.ApiClients.Dialogporten.Common.Exceptions;
+using Altinn.ApiClients.Dialogporten.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
 
 internal sealed class EdDsaSecurityKeysCacheService : BackgroundService
 {
-    public static ReadOnlyCollection<PublicKeyPair> PublicKeys => _keys.AsReadOnly();
-    private static volatile List<PublicKeyPair> _keys = [];
+    internal static ReadOnlyCollection<PublicKeyPair> PublicKeys => _publicKeys.AsReadOnly();
+    private static volatile List<PublicKeyPair> _publicKeys = [];
 
-    private readonly PeriodicTimer _timer = new(TimeSpan.FromHours(12));
-    private readonly ILogger<EdDsaSecurityKeysCacheService> _logger;
+    private static readonly TimeSpan InitInterval = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan ErrorInterval = TimeSpan.FromMinutes(10);
+    private static readonly TimeSpan RefreshInterval = TimeSpan.FromHours(12);
+
+    private readonly PeriodicTimer _timer = new(InitInterval);
     private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly ILogger<EdDsaSecurityKeysCacheService> _logger;
+    private readonly DialogportenSettings _settings;
     private const string EdDsaAlg = "EdDSA";
 
-    public EdDsaSecurityKeysCacheService(ILogger<EdDsaSecurityKeysCacheService> logger, IServiceScopeFactory serviceScopeFactory)
+    public EdDsaSecurityKeysCacheService(
+        IServiceScopeFactory serviceScopeFactory,
+        ILogger<EdDsaSecurityKeysCacheService> logger,
+        IOptions<DialogportenSettings> settings)
     {
-        _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
+        _logger = logger;
+        _settings = settings.Value;
+    }
+
+    public override async Task StartAsync(CancellationToken cancellationToken)
+    {
+        if (!_settings.ThrowOnPublicKeyFetchInit)
+        {
+            await base.StartAsync(cancellationToken);
+            return;
+        }
+
+        if (!await TryRefreshAsync(cancellationToken))
+        {
+            throw new IncompleteDialogportenClientInitializationException("Failed to fetch public keys.");
+        }
+
+        _timer.Period = RefreshInterval;
+        await base.StartAsync(cancellationToken);
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (await _timer.WaitForNextTickAsync(cancellationToken))
         {
-            try
-            {
-                await RefreshAsync(cancellationToken);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "An error occurred while refreshing the EdDsa keys.");
-            }
+            _timer.Period = await TryRefreshAsync(cancellationToken)
+                ? RefreshInterval
+                : ErrorInterval;
+        }
+    }
+
+    private async Task<bool> TryRefreshAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await RefreshAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "An error occurred while refreshing the EdDsa keys.");
+            return false;
         }
 
-        await RefreshAsync(cancellationToken);
+        return true;
     }
+
 
     private async Task RefreshAsync(CancellationToken cancellationToken)
     {
@@ -52,14 +88,14 @@ internal sealed class EdDsaSecurityKeysCacheService : BackgroundService
         var keys = jwks.Keys
             .Where(x => StringComparer.OrdinalIgnoreCase.Equals(x.Alg, EdDsaAlg))
             .Select(k => new PublicKeyPair(
+                k.Kid,
                 PublicKey.Import(
                     SignatureAlgorithm.Ed25519,
                     Base64Url.DecodeFromChars(k.X),
-                    KeyBlobFormat.RawPublicKey),
-                k.Kid))
+                    KeyBlobFormat.RawPublicKey)))
             .ToList();
 
-        _keys = keys;
+        _publicKeys = keys;
     }
 
     public override void Dispose()
@@ -69,4 +105,4 @@ internal sealed class EdDsaSecurityKeysCacheService : BackgroundService
     }
 }
 
-internal sealed record PublicKeyPair(PublicKey Key, string Kid);
+internal sealed record PublicKeyPair(string Kid, PublicKey Key);

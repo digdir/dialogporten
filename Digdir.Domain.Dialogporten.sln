@@ -67,9 +67,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient.Sample", "src\Digdir.Library.Dialogporten.WebApiClient.Sample\Digdir.Library.Dialogporten.WebApiClient.Sample.csproj", "{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient.SampleWebApp", "src\Digdir.Library.Dialogporten.WebApiClient.SampleWebApp\Digdir.Library.Dialogporten.WebApiClient.SampleWebApp.csproj", "{5B29C9D8-EEB6-40A8-A17B-52A5FC408706}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Tool.Dialogporten.LargeDataSetGenerator", "src\Digdir.Tool.Dialogporten.LargeDataSetGenerator\Digdir.Tool.Dialogporten.LargeDataSetGenerator.csproj", "{B0E0E9EE-AFBE-4013-908C-5F8DF66AB671}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient.WebApiSample", "src\Digdir.Library.Dialogporten.WebApiClient.WebApiSample\Digdir.Library.Dialogporten.WebApiClient.WebApiSample.csproj", "{FBF19369-21CD-437D-BB88-CCB81EC947CF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -165,14 +165,14 @@ Global
 		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B29C9D8-EEB6-40A8-A17B-52A5FC408706}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B29C9D8-EEB6-40A8-A17B-52A5FC408706}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B29C9D8-EEB6-40A8-A17B-52A5FC408706}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B29C9D8-EEB6-40A8-A17B-52A5FC408706}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B0E0E9EE-AFBE-4013-908C-5F8DF66AB671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B0E0E9EE-AFBE-4013-908C-5F8DF66AB671}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0E0E9EE-AFBE-4013-908C-5F8DF66AB671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0E0E9EE-AFBE-4013-908C-5F8DF66AB671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBF19369-21CD-437D-BB88-CCB81EC947CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBF19369-21CD-437D-BB88-CCB81EC947CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBF19369-21CD-437D-BB88-CCB81EC947CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBF19369-21CD-437D-BB88-CCB81EC947CF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -204,8 +204,8 @@ Global
 		{9B809C3A-B169-4599-A2D3-A25E87C510FC} = {096E9B69-6783-4446-A895-0B6D7729A0D9}
 		{714FBB11-ADC0-44E8-A768-D1A59D641D31} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
 		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
-		{5B29C9D8-EEB6-40A8-A17B-52A5FC408706} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
 		{B0E0E9EE-AFBE-4013-908C-5F8DF66AB671} = {3C2C775D-F2D1-42A2-B53F-CC6D5FF59633}
+		{FBF19369-21CD-437D-BB88-CCB81EC947CF} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2FE67FF-7622-4AFB-AD8E-961B6A39D888}

@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
-using Altinn.ApiClients.Dialogporten.Config;
-using Altinn.ApiClients.Dialogporten.Extensions;
+using Altinn.ApiClients.Dialogporten;
 using Altinn.ApiClients.Dialogporten.Features.V1;
 using Digdir.Library.Dialogporten.WebApiClient.Sample;
 using Microsoft.Extensions.Configuration;

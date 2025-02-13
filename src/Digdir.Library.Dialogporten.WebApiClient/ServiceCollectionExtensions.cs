@@ -1,7 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Reflection;
-using Altinn.ApiClients.Dialogporten.Config;
-using Altinn.ApiClients.Dialogporten.Interfaces;
+using Altinn.ApiClients.Dialogporten.Infrastructure;
 using Altinn.ApiClients.Dialogporten.Services;
 using Altinn.ApiClients.Maskinporten.Extensions;
 using Altinn.ApiClients.Maskinporten.Services;
@@ -10,13 +9,13 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Refit;
 
-namespace Altinn.ApiClients.Dialogporten.Extensions;
+namespace Altinn.ApiClients.Dialogporten;
 
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDialogportenClient(this IServiceCollection services, DialogportenSettings settings)
     {
-        if (!settings.Validate())
+        if (!DialogportenSettings.Validate())
         {
             throw new InvalidOperationException("Invalid configuration");
         }
