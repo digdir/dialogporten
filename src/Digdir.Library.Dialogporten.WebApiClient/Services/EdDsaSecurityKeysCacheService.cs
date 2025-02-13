@@ -11,11 +11,20 @@ using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
 
+internal interface IEdDsaSecurityKeysCache
+{
+    ReadOnlyCollection<PublicKeyPair> PublicKeys { get; }
+}
+
+internal sealed class DefaultEdDsaSecurityKeysCache : IEdDsaSecurityKeysCache
+{
+    private List<PublicKeyPair> _publicKeys = [];
+    public ReadOnlyCollection<PublicKeyPair> PublicKeys => _publicKeys.AsReadOnly();
+    internal void SetPublicKeys(List<PublicKeyPair> publicKeys) => _publicKeys = publicKeys;
+}
+
 internal sealed class EdDsaSecurityKeysCacheService : BackgroundService
 {
-    internal static ReadOnlyCollection<PublicKeyPair> PublicKeys => _publicKeys.AsReadOnly();
-    private static volatile List<PublicKeyPair> _publicKeys = [];
-
     private static readonly TimeSpan InitInterval = TimeSpan.FromSeconds(10);
     private static readonly TimeSpan ErrorInterval = TimeSpan.FromMinutes(10);
     private static readonly TimeSpan RefreshInterval = TimeSpan.FromHours(12);
@@ -24,15 +33,18 @@ internal sealed class EdDsaSecurityKeysCacheService : BackgroundService
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<EdDsaSecurityKeysCacheService> _logger;
     private readonly DialogportenSettings _settings;
+    private readonly DefaultEdDsaSecurityKeysCache _cache;
     private const string EdDsaAlg = "EdDSA";
 
     public EdDsaSecurityKeysCacheService(
         IServiceScopeFactory serviceScopeFactory,
         ILogger<EdDsaSecurityKeysCacheService> logger,
-        IOptions<DialogportenSettings> settings)
+        IOptions<DialogportenSettings> settings,
+        DefaultEdDsaSecurityKeysCache cache)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
+        _cache = cache;
         _settings = settings.Value;
     }
 
@@ -95,7 +107,7 @@ internal sealed class EdDsaSecurityKeysCacheService : BackgroundService
                     KeyBlobFormat.RawPublicKey)))
             .ToList();
 
-        _publicKeys = keys;
+        _cache.SetPublicKeys(keys);
     }
 
     public override void Dispose()

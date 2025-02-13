@@ -71,6 +71,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Tool.Dialogporten.La
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient.WebApiSample", "src\Digdir.Library.Dialogporten.WebApiClient.WebApiSample\Digdir.Library.Dialogporten.WebApiClient.WebApiSample.csproj", "{FBF19369-21CD-437D-BB88-CCB81EC947CF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{21A54524-CC15-42A7-804B-1E4DEBFAA1F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApiClient", "WebApiClient", "{020E53CD-4575-44BA-81AC-26CE948EE0E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Digdir.Library.Dialogporten.WebApiClient.Unit.Tests", "tests\Digdir.Library.Dialogporten.WebApiClient.Unit.Tests\Digdir.Library.Dialogporten.WebApiClient.Unit.Tests.csproj", "{E6CBC569-6821-4DBB-A819-AC95AA8A0682}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +179,10 @@ Global
 		{FBF19369-21CD-437D-BB88-CCB81EC947CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBF19369-21CD-437D-BB88-CCB81EC947CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBF19369-21CD-437D-BB88-CCB81EC947CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6CBC569-6821-4DBB-A819-AC95AA8A0682}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6CBC569-6821-4DBB-A819-AC95AA8A0682}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6CBC569-6821-4DBB-A819-AC95AA8A0682}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6CBC569-6821-4DBB-A819-AC95AA8A0682}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -206,6 +216,9 @@ Global
 		{F8CB7159-4346-4436-9C35-BFCFDDE5DC2B} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
 		{B0E0E9EE-AFBE-4013-908C-5F8DF66AB671} = {3C2C775D-F2D1-42A2-B53F-CC6D5FF59633}
 		{FBF19369-21CD-437D-BB88-CCB81EC947CF} = {9B809C3A-B169-4599-A2D3-A25E87C510FC}
+		{21A54524-CC15-42A7-804B-1E4DEBFAA1F7} = {CADB8189-4AA1-4732-844A-C41DBF3EC8B7}
+		{020E53CD-4575-44BA-81AC-26CE948EE0E7} = {21A54524-CC15-42A7-804B-1E4DEBFAA1F7}
+		{E6CBC569-6821-4DBB-A819-AC95AA8A0682} = {020E53CD-4575-44BA-81AC-26CE948EE0E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B2FE67FF-7622-4AFB-AD8E-961B6A39D888}

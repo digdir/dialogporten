@@ -32,4 +32,9 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+        <InternalsVisibleTo Include="Digdir.Library.Dialogporten.WebApiClient.Unit.Tests"/>
+        <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
+    </ItemGroup>
+
 </Project>
