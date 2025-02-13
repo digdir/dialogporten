@@ -115,10 +115,10 @@ jobs:
     if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasInfraChanges == 'true') }}
     needs: [deploy-apps, deploy-infra, check-for-changes]
     #needs: [deploy-apps, check-for-changes]
-    uses: ./.github/workflows/workflow-run-k6-ci-cd-yt01.yml
+    uses: ./.github/workflows/workflow-run-k6-performance.yml
     secrets:
-      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
-      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     strategy:
       max-parallel: 1
       matrix:
@@ -133,6 +133,9 @@ jobs:
       vus: 1
       duration: 30s
       testSuitePath: ${{ matrix.files }}
+      parallelism: 1
+      breakpoint: false
+      abortOnFail: false
       ref: "refs/tags/v${{ github.event.client_payload.version }}"
     permissions:
       checks: write
