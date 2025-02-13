@@ -14,14 +14,8 @@ public interface IDialogTokenVerifier
 
 internal sealed class DialogTokenVerifier : IDialogTokenVerifier
 {
-    private readonly string _kid;
-    private readonly ReadOnlyCollection<PublicKeyPair> _publicKey;
-    public DialogTokenVerifier(IOptions<DialogportenSettings> options)
+    public DialogTokenVerifier()
     {
-        _kid = options.Value.Ed25519Keys.Primary.Kid;
-        // _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
-        // Base64Url.DecodeFromChars(options.Value.Ed25519Keys.Primary.PublicComponent), KeyBlobFormat.RawPublicKey);
-        _publicKey = EdDsaSecurityKeysCacheService.PublicKeys;
     }
     public bool Verify(ReadOnlySpan<char> token)
     {
