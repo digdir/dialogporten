@@ -256,12 +256,12 @@ public static class ClaimsPrincipalExtensions
         var (userType, externalId) = claimsPrincipal.GetUserType();
         return userType switch
         {
-            UserIdType.ServiceOwnerOnBehalfOfPerson or UserIdType.Person => NorwegianPersonIdentifier.TryParse(externalId, out var personId)
-                                ? personId
-                                : null,
-            UserIdType.SystemUser => SystemUserIdentifier.TryParse(externalId, out var systemUserId)
-                                ? systemUserId
-                                : null,
+            UserIdType.ServiceOwnerOnBehalfOfPerson or UserIdType.Person
+                => NorwegianPersonIdentifier.TryParse(externalId, out var personId)
+                    ? personId : null,
+            UserIdType.SystemUser
+                => SystemUserIdentifier.TryParse(externalId, out var systemUserId)
+                    ? systemUserId : null,
             UserIdType.Unknown => null,
             UserIdType.ServiceOwner => null,
             _ => null
