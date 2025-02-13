@@ -1,4 +1,5 @@
 using System.Buffers.Text;
+using System.Collections.ObjectModel;
 using System.Text.Json;
 using Altinn.ApiClients.Dialogporten.Config;
 using Microsoft.Extensions.Options;
@@ -14,13 +15,13 @@ public interface IDialogTokenVerifier
 internal sealed class DialogTokenVerifier : IDialogTokenVerifier
 {
     private readonly string _kid;
-    private readonly PublicKey _publicKey;
+    private readonly ReadOnlyCollection<PublicKeyPair> _publicKey;
     public DialogTokenVerifier(IOptions<DialogportenSettings> options)
     {
         _kid = options.Value.Ed25519Keys.Primary.Kid;
         // _publicKey = PublicKey.Import(SignatureAlgorithm.Ed25519,
         // Base64Url.DecodeFromChars(options.Value.Ed25519Keys.Primary.PublicComponent), KeyBlobFormat.RawPublicKey);
-        _publicKey = EdDsaSecurityKeysCacheService.PublicKeys[0];
+        _publicKey = EdDsaSecurityKeysCacheService.PublicKeys;
     }
     public bool Verify(ReadOnlySpan<char> token)
     {
@@ -54,8 +55,9 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
                 return false;
             }
 
+            var publicKey = EdDsaSecurityKeysCacheService.PublicKeys[0];
             var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
-            if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != EdDsaSecurityKeysCacheService.PublicKeys[0].Kid)
+            if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != publicKey.Kid)
             {
                 return false;
             }
@@ -65,8 +67,7 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             headerAndBody[header.Length] = (byte)'.';
             body[..bodyLength].CopyTo(headerAndBody[(header.Length + 1)..]);
 
-            var publicKey = EdDsaSecurityKeysCacheService.PublicKeys[0];
-            if (!SignatureAlgorithm.Ed25519.Verify(publicKey, headerAndBody, signature))
+            if (!SignatureAlgorithm.Ed25519.Verify(publicKey.Key, headerAndBody, signature))
             {
                 return false;
             }

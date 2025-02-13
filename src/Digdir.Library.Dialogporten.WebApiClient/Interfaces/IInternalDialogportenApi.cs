@@ -5,7 +5,7 @@ namespace Altinn.ApiClients.Dialogporten.Interfaces;
 internal interface IInternalDialogportenApi
 {
     [Get("/api/v1/.well-known/jwks.json")]
-    Task<IApiResponse<DialogportenJwks>> GetJwks(CancellationToken cancellationToken);
+    Task<DialogportenJwks> GetJwks(CancellationToken cancellationToken);
 }
 
 internal sealed class DialogportenJwks
