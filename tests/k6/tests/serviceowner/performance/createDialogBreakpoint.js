@@ -1,6 +1,6 @@
 import { createDialog } from '../../performancetest_common/createDialog.js'
 import { endUsers, serviceOwners } from '../../performancetest_common/readTestdata.js';
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { randomItem } from '../../../common/k6-utils.js';
 
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 const stages_duration = (__ENV.stages_duration ?? '1m');
