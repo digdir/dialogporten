@@ -17,7 +17,7 @@ app.UseHttpsRedirection();
 
 app.MapPost("/dialogTokenVerify", (
         [FromServices] IDialogTokenVerifier dialogTokenVerifier,
-        [FromBody] string token) 
+        [FromBody] string token)
     => dialogTokenVerifier.Verify(token)
         ? Results.Ok()
         : Results.Unauthorized());
