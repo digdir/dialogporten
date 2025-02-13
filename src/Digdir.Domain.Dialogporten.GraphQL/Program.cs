@@ -15,7 +15,6 @@ using FluentValidation;
 using HotChocolate.AspNetCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Options;
-using Digdir.Domain.Dialogporten.GraphQL.Common.Extensions;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
