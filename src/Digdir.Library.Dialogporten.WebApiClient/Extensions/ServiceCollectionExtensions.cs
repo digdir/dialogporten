@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(settings.BaseUri));
 
         services.AddHostedService<EdDsaSecurityKeysCacheService>();
-        services.TryAddSingleton<IDialogTokenVerifier, DialogTokenVerifier>();
+        services.TryAddScoped<IDialogTokenVerifier, DialogTokenVerifier>();
         return services;
     }
 

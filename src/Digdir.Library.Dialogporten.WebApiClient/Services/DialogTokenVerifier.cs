@@ -1,8 +1,5 @@
 using System.Buffers.Text;
-using System.Collections.ObjectModel;
 using System.Text.Json;
-using Altinn.ApiClients.Dialogporten.Config;
-using Microsoft.Extensions.Options;
 using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
@@ -14,9 +11,6 @@ public interface IDialogTokenVerifier
 
 internal sealed class DialogTokenVerifier : IDialogTokenVerifier
 {
-    public DialogTokenVerifier()
-    {
-    }
     public bool Verify(ReadOnlySpan<char> token)
     {
         try // Amund: me no like
@@ -49,9 +43,9 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
                 return false;
             }
 
-            var publicKey = EdDsaSecurityKeysCacheService.PublicKeys[0];
+            var publicKeyPair = EdDsaSecurityKeysCacheService.PublicKeys[0];
             var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
-            if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != publicKey.Kid)
+            if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != publicKeyPair.Kid)
             {
                 return false;
             }
@@ -61,7 +55,7 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
             headerAndBody[header.Length] = (byte)'.';
             body[..bodyLength].CopyTo(headerAndBody[(header.Length + 1)..]);
 
-            if (!SignatureAlgorithm.Ed25519.Verify(publicKey.Key, headerAndBody, signature))
+            if (!SignatureAlgorithm.Ed25519.Verify(publicKeyPair.Key, headerAndBody, signature))
             {
                 return false;
             }
