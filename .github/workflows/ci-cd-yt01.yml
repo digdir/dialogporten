@@ -120,7 +120,7 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     strategy:
-      max-parallel: 1
+      max-parallel: 4
       matrix:
         files:
           - tests/k6/tests/serviceowner/performance/serviceOwnerSearchWithThresholds.js
