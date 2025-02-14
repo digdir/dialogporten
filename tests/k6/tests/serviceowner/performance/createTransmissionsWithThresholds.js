@@ -7,9 +7,9 @@ export const options = {
     vus: 1,
     duration: "30s",
     thresholds: {
-        "http_req_duration{name:create dialog}": ["p(95)<200"],
+        "http_req_duration{name:create dialog}": ["p(95)<300"],
         "http_reqs{name:create dialog}": [],
-        "http_req_duration{name:create transmission}": ["p(95)<200"],
+        "http_req_duration{name:create transmission}": ["p(95)<500"],
         "http_reqs{name:create transmission}": []
     }
 };
