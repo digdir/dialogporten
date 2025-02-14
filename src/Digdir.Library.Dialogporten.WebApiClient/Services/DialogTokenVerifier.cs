@@ -19,21 +19,40 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
         _clock = clock;
     }
 
-    public bool Verify(ReadOnlySpan<char> token)
+    public IValidationResult Validate(ReadOnlySpan<char> token)
     {
-        if (!TryGetTokenParts(token, out var tokenParts))
-        {
-            return false;
-        }
-
+        const string tokenPropertyName = "token";
+        var validationResult = new DefaultValidationResult();
         Span<byte> tokenDecodeBuffer = stackalloc byte[Base64Url.GetMaxDecodedLength(token.Length)];
-        if (!TryDecodeParts(tokenDecodeBuffer, tokenParts, out var decodedTokenParts))
+
+        if (!TryDecodeToken(token, tokenDecodeBuffer, out var tokenParts, out var decodedTokenParts))
         {
-            return false;
+            validationResult.AddError(tokenPropertyName, "Invalid token format");
+            return validationResult;
         }
 
-        return VerifySignature(tokenParts, decodedTokenParts)
-            && VerifyExpiration(decodedTokenParts);
+        if (!VerifySignature(tokenParts, decodedTokenParts))
+        {
+            validationResult.AddError(tokenPropertyName, "Invalid signature");
+        }
+
+        if (!VerifyExpiration(decodedTokenParts))
+        {
+            validationResult.AddError(tokenPropertyName, "Token has expired");
+        }
+
+        return validationResult;
+    }
+
+    private static bool TryDecodeToken(
+        ReadOnlySpan<char> token,
+        Span<byte> tokenDecodeBuffer,
+        out JwksTokenParts<char> tokenParts,
+        out JwksTokenParts<byte> decodedTokenParts)
+    {
+        decodedTokenParts = default;
+        return TryGetTokenParts(token, out tokenParts)
+            && TryDecodeParts(tokenDecodeBuffer, tokenParts, out decodedTokenParts);
     }
 
     private static bool TryGetTokenParts(ReadOnlySpan<char> token, out JwksTokenParts<char> tokenParts)

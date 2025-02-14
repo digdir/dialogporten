@@ -24,10 +24,10 @@ public class DialogTokenVerifierTests
         var sut = new DialogTokenVerifier(keyCache, clock);
 
         // Act
-        var result = sut.Verify(dialogToken);
+        var result = sut.Validate(dialogToken);
 
         // Assert
-        Assert.True(result);
+        Assert.True(result.IsValid);
     }
 
     private static IEdDsaSecurityKeysCache CreateEdDsaSecurityKeysCacheMock(IEnumerable<PublicKeyPair> publicKeyPairs)
