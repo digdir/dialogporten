@@ -120,18 +120,19 @@ jobs:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     strategy:
-      max-parallel: 1
+      max-parallel: 4
       matrix:
         files:
           - tests/k6/tests/serviceowner/performance/serviceOwnerSearchWithThresholds.js
           - tests/k6/tests/serviceowner/performance/createDialogWithThresholds.js
+          - tests/k6/tests/serviceowner/performance/createTransmissionsWithThresholds.js
           - tests/k6/tests/enduser/performance/enduserSearchWithThresholds.js
       fail-fast: false
     with:
       environment: yt01
       apiVersion: v1
       vus: 1
-      duration: 30s
+      duration: 60s
       testSuitePath: ${{ matrix.files }}
       parallelism: 1
       breakpoint: false
