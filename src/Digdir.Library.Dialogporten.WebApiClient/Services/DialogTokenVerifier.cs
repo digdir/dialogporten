@@ -28,8 +28,37 @@ internal sealed class DialogTokenVerifier : IDialogTokenVerifier
         {
             return false;
         }
-
         var headerAndBodySpan = tokenByteSpan[..(headerSpan.Length + bodySpan.Length + 1)];
+
+        // Amund Note: 
+        //  [x] Er signatureSpan korrekt?
+        //      [x] signatureSpan korrekt lengde? 64
+        //      [x] signatureSpan korrekt innhold?
+        //  [x] Er headerSpan korrekt?
+        //      [x] headerSpan korrekt lengde? 59
+        //      [x] headerSpan korrekt innhold?
+        //  [x] Er bodySpan korrekt?
+        //      [x] bodySpan korrekt lengde? 346
+        //      [x] bodySpan korrekt innhold?
+        //  [x] HeaderAndBodySpan virker korrekt med manuel Byte sjekk i debugger
+        //  [x] HeaderAndBodySpan lengde er som forventet headderLen + BodyLen + 1 = 59 + 346 + 1 = 406 
+
+        // Amund Note: Sig fra denne er lik  med signatureSpan
+        //  Manuelt sjekking av bytes viser at begge har 64 elementer (index 0 -> inc 63)
+        //  sig[..64].SequenceEqual(signatureSpan) i debugger gir True
+
+        // var enumerator = token.Split('.');
+        // enumerator.MoveNext();
+        // Span<byte> header = stackalloc byte[enumerator.Current.End.Value - enumerator.Current.Start.Value];
+        // Base64Url.DecodeFromChars(token[enumerator.Current], header);
+        // enumerator.MoveNext();
+        // Span<byte> body = stackalloc byte[enumerator.Current.End.Value - enumerator.Current.Start.Value];
+        // Base64Url.DecodeFromChars(token[enumerator.Current], body);
+        // enumerator.MoveNext();
+        // Span<byte> sig = stackalloc byte[token.Length];
+        // Base64Url.DecodeFromChars(token[enumerator.Current], sig);
+
+
         var lala = Encoding.UTF8.GetString(headerAndBodySpan).Split('.');
 
         if (!SignatureAlgorithm.Ed25519.Verify(publicKeys[1].Key, headerAndBodySpan, signatureSpan))
