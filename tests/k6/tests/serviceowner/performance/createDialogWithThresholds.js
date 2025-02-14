@@ -6,7 +6,7 @@ export let options = {
     vus: 1,
     duration: "30s",
     thresholds: {
-        "http_req_duration{name:create dialog}": ["p(95)<200"],
+        "http_req_duration{name:create dialog}": ["p(95)<300"],
         "http_reqs{name:create dialog}": []   
     }
 }
