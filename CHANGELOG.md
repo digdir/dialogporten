@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.7](https://github.com/Altinn/dialogporten/compare/v1.50.6...v1.50.7) (2025-02-14)
+
+
+### Miscellaneous Chores
+
+* **performance:** tweaking of thresholds and improvements on performance smoketest ([#1879](https://github.com/Altinn/dialogporten/issues/1879)) ([8b8f609](https://github.com/Altinn/dialogporten/commit/8b8f609512d77d551ab1a9e3b5e57be98f071d05))
+
 ## [1.50.6](https://github.com/Altinn/dialogporten/compare/v1.50.5...v1.50.6) (2025-02-13)
 
 
