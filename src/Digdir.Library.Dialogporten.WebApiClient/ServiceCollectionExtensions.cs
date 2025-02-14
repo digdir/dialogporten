@@ -1,5 +1,6 @@
 using System.CodeDom.Compiler;
 using System.Reflection;
+using Altinn.ApiClients.Dialogporten.Common;
 using Altinn.ApiClients.Dialogporten.Infrastructure;
 using Altinn.ApiClients.Dialogporten.Services;
 using Altinn.ApiClients.Maskinporten.Extensions;
@@ -45,6 +46,7 @@ public static class ServiceCollectionExtensions
         services.TryAddTransient<IDialogTokenVerifier, DialogTokenVerifier>();
         services.TryAddSingleton<DefaultEdDsaSecurityKeysCache>();
         services.TryAddSingleton<IEdDsaSecurityKeysCache>(x => x.GetRequiredService<DefaultEdDsaSecurityKeysCache>());
+        services.TryAddTransient<IClock, DefaultClock>();
         return services;
     }
 

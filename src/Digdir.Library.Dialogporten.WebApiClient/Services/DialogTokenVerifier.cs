@@ -1,6 +1,9 @@
 using System.Buffers.Text;
+using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
+using Altinn.ApiClients.Dialogporten.Common;
 using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
@@ -8,162 +11,207 @@ namespace Altinn.ApiClients.Dialogporten.Services;
 internal sealed class DialogTokenVerifier : IDialogTokenVerifier
 {
     private readonly IEdDsaSecurityKeysCache _publicKeysCache;
+    private readonly IClock _clock;
 
-    public DialogTokenVerifier(IEdDsaSecurityKeysCache publicKeysCache)
+    public DialogTokenVerifier(IEdDsaSecurityKeysCache publicKeysCache, IClock clock)
     {
         _publicKeysCache = publicKeysCache;
+        _clock = clock;
     }
 
     public bool Verify(ReadOnlySpan<char> token)
     {
-        var publicKeys = _publicKeysCache.PublicKeys;
-        if (publicKeys.Count == 0)
-        {
-            // TODO: Fix this
-            throw new InvalidOperationException();
-        }
-
-        Span<byte> tokenByteSpan = stackalloc byte[Base64Url.GetMaxDecodedLength(token.Length)];
-        if (!TryExtractTokenParts(token, tokenByteSpan, out var headerSpan, out var bodySpan, out var signatureSpan))
+        if (!TryGetTokenParts(token, out var tokenParts))
         {
             return false;
         }
 
-        var headerAndBodySpan = tokenByteSpan[..(headerSpan.Length + bodySpan.Length + 1)];
-        var lala = Encoding.UTF8.GetString(headerAndBodySpan).Split('.');
-
-        if (!SignatureAlgorithm.Ed25519.Verify(publicKeys[1].Key, headerAndBodySpan, signatureSpan))
+        Span<byte> tokenDecodeBuffer = stackalloc byte[Base64Url.GetMaxDecodedLength(token.Length)];
+        if (!TryDecodeParts(tokenDecodeBuffer, tokenParts, out var decodedTokenParts))
         {
             return false;
         }
 
-        return false;
-        // TODO: Get correct public key based on kid
-
-        // try // Amund: me no like
-        // {
-        //     if (EdDsaSecurityKeysCacheService.PublicKeys.Count == 0)
-        //     {
-        //         return false;
-        //     }
-        //     var publicKeyPair = EdDsaSecurityKeysCacheService.PublicKeys[0];
-        //
-        //     var tokenPartEnumerator = token.Split('.');
-        //     if (!tokenPartEnumerator.MoveNext())
-        //     {
-        //         return false;
-        //     }
-        //
-        //     // Amund: Sparer ca 3 operations i IL med å lagre i egen variabel først
-        //     var current = tokenPartEnumerator.Current;
-        //     Span<byte> header = stackalloc byte[current.End.Value - current.Start.Value];
-        //     if (!tokenPartEnumerator.MoveNext() || !Base64Url.TryDecodeFromChars(token[current], header, out var headerLength))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     current = tokenPartEnumerator.Current;
-        //     Span<byte> body = stackalloc byte[current.End.Value - current.Start.Value];
-        //     if (!tokenPartEnumerator.MoveNext() || !Base64Url.TryDecodeFromChars(token[current], body, out var bodyLength))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     current = tokenPartEnumerator.Current;
-        //     Span<byte> signature = stackalloc byte[current.End.Value - current.Start.Value];
-        //     if (tokenPartEnumerator.MoveNext() && !Base64Url.TryDecodeFromChars(token[current], signature, out _))
-        //     {
-        //         return false;
-        //     }
-        //     var headerJson = JsonSerializer.Deserialize<JsonElement>(header);
-        //     if (!headerJson.TryGetProperty("kid", out var value) && value.GetString() != publicKeyPair.Kid)
-        //     {
-        //         return false;
-        //     }
-        //
-        //     Span<byte> headerAndBody = stackalloc byte[headerLength + bodyLength + 1];
-        //     header[..headerLength].CopyTo(headerAndBody);
-        //     headerAndBody[header.Length] = (byte)'.';
-        //     body[..bodyLength].CopyTo(headerAndBody[(header.Length + 1)..]);
-        //
-        //     if (!SignatureAlgorithm.Ed25519.Verify(publicKeyPair.Key, headerAndBody, signature))
-        //     {
-        //         return false;
-        //     }
-        //
-        //     var bodyJson = JsonSerializer.Deserialize<JsonElement>(body);
-        //
-        //     return TryGetExpires(bodyJson, out var expiresOffset) &&
-        //            expiresOffset >= DateTimeOffset.UtcNow;
-        // }
-        // catch (FormatException)
-        // {
-        //     return false;
-        // }
+        return VerifySignature(tokenParts, decodedTokenParts)
+            && VerifyExpiration(decodedTokenParts);
     }
 
-    private static bool TryExtractTokenParts(
-        ReadOnlySpan<char> token,
-        Span<byte> tokenBytes,
-        out ReadOnlySpan<byte> header,
-        out ReadOnlySpan<byte> body,
-        out ReadOnlySpan<byte> signature)
+    private static bool TryGetTokenParts(ReadOnlySpan<char> token, out JwksTokenParts<char> tokenParts)
     {
-        header = body = signature = default;
+        tokenParts = default;
         var enumerator = token.Split('.');
-        var spanPointer = 0;
-
         // Header
         if (!enumerator.MoveNext()) return false;
-        var spanPointerNext = spanPointer + Base64Url.DecodeFromChars(token[enumerator.Current], tokenBytes[spanPointer..]);
-        header = tokenBytes[spanPointer..spanPointerNext];
-        tokenBytes[spanPointerNext++] = (byte)'.';
-        spanPointer = spanPointerNext;
+        var header = token[enumerator.Current];
 
         // Body
         if (!enumerator.MoveNext()) return false;
-        spanPointerNext = spanPointer + Base64Url.DecodeFromChars(token[enumerator.Current], tokenBytes[spanPointer..]);
-        body = tokenBytes[spanPointer..spanPointerNext];
-        tokenBytes[spanPointerNext++] = (byte)'.';
-        spanPointer = spanPointerNext;
+        var body = token[enumerator.Current];
 
         // Signature
         if (!enumerator.MoveNext()) return false;
-        spanPointerNext = spanPointer + Base64Url.DecodeFromChars(token[enumerator.Current], tokenBytes[spanPointer..]);
-        signature = tokenBytes[spanPointer..spanPointerNext];
+        var signature = token[enumerator.Current];
 
+        tokenParts = new JwksTokenParts<char>(token, header, body, signature);
         return !enumerator.MoveNext();
     }
 
-    private static bool TryGetExpires(JsonElement bodyJson, out DateTimeOffset expires)
+    private static bool TryDecodeParts(
+        Span<byte> buffer,
+        JwksTokenParts<char> parts,
+        out JwksTokenParts<byte> decodedParts)
     {
-        expires = default;
-        if (!bodyJson.TryGetProperty(DialogTokenClaimTypes.Expires, out var expiresElement))
+        decodedParts = default;
+        var bufferPointer = 0;
+        if (!TryDecodePart(parts.Header, buffer, out var header, out var headerLength))
         {
             return false;
         }
 
-        if (!expiresElement.TryGetInt32(out var expiresIn))
+        bufferPointer += headerLength;
+        buffer[bufferPointer++] = (byte)'.';
+        if (!TryDecodePart(parts.Body, buffer[bufferPointer..], out var body, out var bodyLength))
         {
             return false;
         }
-        expires = DateTimeOffset.FromUnixTimeSeconds(expiresIn);
+
+        bufferPointer += bodyLength;
+        buffer[bufferPointer++] = (byte)'.';
+        if (!TryDecodePart(parts.Signature, buffer[bufferPointer..], out var signature, out _))
+        {
+            return false;
+        }
+
+        decodedParts = new JwksTokenParts<byte>(buffer, header, body, signature);
         return true;
+    }
+
+    private bool VerifySignature(
+        JwksTokenParts<char> tokenParts,
+        JwksTokenParts<byte> decodedTokenParts)
+    {
+        var publicKeys = _publicKeysCache.PublicKeys;
+        if (publicKeys.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "No public keys available. Most likely due to an error when fetching the " +
+                "public keys from the dialogporten well-known endpoint. Please check the " +
+                "logs for more information. Alternatively, set " +
+                "DialogportenSettings.ThrowOnPublicKeyFetchInit=true to ensure public " +
+                "keys are fetched before starting up the application.");
+        }
+
+        var rawSignedPartLength = tokenParts.Header.Length + tokenParts.Body.Length + 1;
+        Span<byte> signedPartBuffer = stackalloc byte[Encoding.UTF8.GetMaxByteCount(rawSignedPartLength)];
+        if (!Encoding.UTF8.TryGetBytes(tokenParts.Buffer[..rawSignedPartLength], signedPartBuffer, out var signedPartLength))
+        {
+            return false;
+        }
+
+        var signedPart = signedPartBuffer[..signedPartLength];
+
+        return TryGetPublicKey(publicKeys, decodedTokenParts.Header, out var publicKey)
+            && SignatureAlgorithm.Ed25519.Verify(publicKey, signedPart, decodedTokenParts.Signature);
+    }
+
+    private bool VerifyExpiration(JwksTokenParts<byte> decodedTokenParts)
+    {
+        const string expiresPropertyName = "exp";
+        if (!TryGetPropertyValue(decodedTokenParts.Body, expiresPropertyName, out var expiresSpan))
+        {
+            return false;
+        }
+
+        if (!Utf8Parser.TryParse(expiresSpan, out long expiresUnixTimeSeconds, out var bytesConsumed))
+        {
+            return false;
+        }
+
+        if (bytesConsumed != expiresSpan.Length)
+        {
+            return false;
+        }
+
+        var expires = DateTimeOffset.FromUnixTimeSeconds(expiresUnixTimeSeconds);
+        return expires >= _clock.UtcNow;
+    }
+
+    private static bool TryDecodePart(ReadOnlySpan<char> tokenPart, Span<byte> buffer, out ReadOnlySpan<byte> span, out int length)
+    {
+        if (!Base64Url.TryDecodeFromChars(tokenPart, buffer, out length))
+        {
+            span = default;
+            return false;
+        }
+
+        span = buffer[..length];
+        return true;
+    }
+
+    private static bool TryGetPublicKey(ReadOnlyCollection<PublicKeyPair> keyPairs, ReadOnlySpan<byte> header, [NotNullWhen(true)] out PublicKey? publicKey)
+    {
+        const string kidPropertyName = "kid";
+        publicKey = null;
+        if (!TryGetPropertyValue(header, kidPropertyName, out var tokenKid))
+        {
+            return false;
+        }
+
+        Span<char> kidCharBuffer = stackalloc char[Encoding.UTF8.GetMaxCharCount(tokenKid.Length)];
+        if (!Encoding.UTF8.TryGetChars(tokenKid, kidCharBuffer, out var charsWritten))
+        {
+            return false;
+        }
+
+        foreach (var (kid, key) in keyPairs)
+        {
+            if (!kid.AsSpan().SequenceEqual(kidCharBuffer[..charsWritten])) continue;
+            publicKey = key;
+            return true;
+        }
+
+        return false;
+    }
+
+    private static bool TryGetPropertyValue(ReadOnlySpan<byte> json, ReadOnlySpan<char> name, out ReadOnlySpan<byte> value)
+    {
+        var reader = new Utf8JsonReader(json);
+        while (reader.Read())
+        {
+            if (!IsPropertyName(reader, name)) continue;
+            reader.Read();
+            value = reader.ValueSpan;
+            return true;
+        }
+
+        value = default;
+        return false;
+    }
+
+    private static bool IsPropertyName(Utf8JsonReader reader, ReadOnlySpan<char> name)
+    {
+        return reader.TokenType == JsonTokenType.PropertyName && reader.ValueTextEquals(name);
+    }
+
+    private readonly ref struct JwksTokenParts<T>
+        where T : unmanaged
+    {
+        public ReadOnlySpan<T> Buffer { get; }
+
+        public ReadOnlySpan<T> Header { get; }
+
+        public ReadOnlySpan<T> Body { get; }
+
+        public ReadOnlySpan<T> Signature { get; }
+
+        public JwksTokenParts(ReadOnlySpan<T> buffer, ReadOnlySpan<T> header, ReadOnlySpan<T> body, ReadOnlySpan<T> signature)
+        {
+            Buffer = buffer;
+            Header = header;
+            Body = body;
+            Signature = signature;
+        }
     }
 }
 
-internal static class DialogTokenClaimTypes
-{
-    public const string JwtId = "jti";
-    public const string Issuer = "iss";
-    public const string IssuedAt = "iat";
-    public const string NotBefore = "nbf";
-    public const string Expires = "exp";
-    public const string AuthenticationLevel = "l";
-    public const string AuthenticatedParty = "c";
-    public const string DialogParty = "p";
-    public const string SupplierParty = "u";
-    public const string ServiceResource = "s";
-    public const string DialogId = "i";
-    public const string Actions = "a";
-}
+
