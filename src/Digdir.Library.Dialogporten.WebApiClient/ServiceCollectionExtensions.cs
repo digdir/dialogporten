@@ -43,7 +43,7 @@ public static class ServiceCollectionExtensions
             .ConfigureHttpClient(c => c.BaseAddress = new Uri(settings.BaseUri));
 
         services.AddHostedService<EdDsaSecurityKeysCacheService>();
-        services.TryAddTransient<IDialogTokenVerifier, DialogTokenVerifier>();
+        services.TryAddTransient<IDialogTokenValidator, DialogTokenValidator>();
         services.TryAddSingleton<DefaultEdDsaSecurityKeysCache>();
         services.TryAddSingleton<IEdDsaSecurityKeysCache>(x => x.GetRequiredService<DefaultEdDsaSecurityKeysCache>());
         services.TryAddTransient<IClock, DefaultClock>();

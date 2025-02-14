@@ -1,11 +1,5 @@
 namespace Altinn.ApiClients.Dialogporten.Services;
 
-public interface IValidationResult
-{
-    bool IsValid { get; }
-    Dictionary<string, List<string>> Errors { get; }
-}
-
 internal sealed class DefaultValidationResult : IValidationResult
 {
     public Dictionary<string, List<string>> Errors { get; } = [];

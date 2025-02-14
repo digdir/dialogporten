@@ -8,12 +8,12 @@ using NSec.Cryptography;
 
 namespace Altinn.ApiClients.Dialogporten.Services;
 
-internal sealed class DialogTokenVerifier : IDialogTokenVerifier
+internal sealed class DialogTokenValidator : IDialogTokenValidator
 {
     private readonly IEdDsaSecurityKeysCache _publicKeysCache;
     private readonly IClock _clock;
 
-    public DialogTokenVerifier(IEdDsaSecurityKeysCache publicKeysCache, IClock clock)
+    public DialogTokenValidator(IEdDsaSecurityKeysCache publicKeysCache, IClock clock)
     {
         _publicKeysCache = publicKeysCache;
         _clock = clock;
