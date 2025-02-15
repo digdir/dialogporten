@@ -24,6 +24,7 @@ public static class ServiceCollectionExtensions
             .AddType<DialogByIdDeleted>()
             .AddType<DialogByIdNotFound>()
             .AddType<DialogByIdForbidden>()
+            .AddType<DialogByIdForbiddenAuthLevelToLow>()
             .AddType<SearchDialogValidationError>()
             .AddType<SearchDialogForbidden>()
             .AddType<SetSystemLabelEntityNotFound>()

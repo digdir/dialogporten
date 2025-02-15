@@ -188,6 +188,26 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
             seenLog.IsCurrentEndUser = IdentifierMasker.GetMaybeMaskedIdentifier(_userRegistry.GetCurrentUserId().ExternalIdWithPrefix) == seenLog.SeenBy.ActorId;
         }
 
+        var serviceResources = paginatedList.Items
+            .Select(x => x.ServiceResource)
+            .ToList();
+
+        var resourcePolicyInformation = await _db.ResourcePolicyInformation
+            .Where(x => serviceResources.Contains(x.Resource))
+            .ToDictionaryAsync(x => x.Resource, x => x.MinimumAuthenticationLevel, cancellationToken);
+
+        foreach (var dialog in paginatedList.Items)
+        {
+            if (!resourcePolicyInformation.TryGetValue(dialog.ServiceResource, out var minimumAuthenticationLevel))
+            {
+                continue;
+            }
+
+            if (!_altinnAuthorization.UserHasRequiredAuthLevel(minimumAuthenticationLevel))
+            {
+                dialog.Content.TrySetNonSensitiveContent();
+            }
+        }
         return paginatedList.ConvertTo(_mapper.Map<DialogDto>);
     }
 }

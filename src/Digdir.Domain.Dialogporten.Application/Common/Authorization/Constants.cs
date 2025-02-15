@@ -10,6 +10,8 @@ public static class Constants
     public const string TransmissionReadAction = "transmissionread";
     public static readonly Uri UnauthorizedUri = new("urn:dialogporten:unauthorized");
 
+    public const string AltinnAuthLevelToLow = "Altinn authentication (eIDAS) level too low. MORE MSG PLS";
+
     public const string DisableAltinnEventsRequiresAdminScope =
         "Disabling Altinn events requires service owner admin scope.";
 
@@ -24,7 +26,7 @@ public static class Constants
 public static class AuthorizationScope
 {
     /// <summary>
-    /// Needed to be able to modify (create/update/delete) correspondence service resources. Primarily used by the correspondence service. 
+    /// Needed to be able to modify (create/update/delete) correspondence service resources. Primarily used by the correspondence service.
     /// </summary>
     public const string CorrespondenceScope = "digdir:dialogporten.correspondence";
 

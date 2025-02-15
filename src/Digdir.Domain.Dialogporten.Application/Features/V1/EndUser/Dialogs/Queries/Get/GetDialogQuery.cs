@@ -116,6 +116,15 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
+        var resourcePolicyInformation = _db.ResourcePolicyInformation
+            .FirstOrDefault(x => x.Resource == dialog.ServiceResource);
+
+        if (resourcePolicyInformation is not null &&
+            !_altinnAuthorization.UserHasRequiredAuthLevel(resourcePolicyInformation.MinimumAuthenticationLevel))
+        {
+            return new Forbidden(Constants.AltinnAuthLevelToLow);
+        }
+
         // TODO: What if name lookup fails
         // https://github.com/altinn/dialogporten/issues/387
         var currentUserInformation = await _userRegistry.GetCurrentUserInformation(cancellationToken);

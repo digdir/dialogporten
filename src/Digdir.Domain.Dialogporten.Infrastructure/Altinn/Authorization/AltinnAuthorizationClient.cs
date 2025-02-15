@@ -106,6 +106,13 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                || authorizedResourcesForSearch.DialogIds.Contains(dialog.Id);
     }
 
+    public bool UserHasRequiredAuthLevel(int minimumAuthenticationLevel)
+    {
+        _user.GetPrincipal().TryGetAuthenticationLevel(out var authLevel);
+
+        return minimumAuthenticationLevel <= authLevel;
+    }
+
     private static AuthorizedPartiesResult GetFlattenedAuthorizedParties(AuthorizedPartiesResult authorizedParties)
     {
         var flattenedAuthorizedParties = new AuthorizedPartiesResult();
