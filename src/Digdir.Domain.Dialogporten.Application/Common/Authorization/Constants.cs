@@ -10,7 +10,7 @@ public static class Constants
     public const string TransmissionReadAction = "transmissionread";
     public static readonly Uri UnauthorizedUri = new("urn:dialogporten:unauthorized");
 
-    public const string AltinnAuthLevelToLow = "Altinn authentication (eIDAS) level too low. MORE MSG PLS";
+    public const string AltinnAuthLevelToLow = "Altinn authentication level too low.";
 
     public const string DisableAltinnEventsRequiresAdminScope =
         "Disabling Altinn events requires service owner admin scope.";
