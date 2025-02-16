@@ -1,5 +1,6 @@
 using AutoMapper;
 using Digdir.Domain.Dialogporten.Application.Common;
+using Digdir.Domain.Dialogporten.Application.Common.Authorization;
 using Digdir.Domain.Dialogporten.Application.Common.ReturnTypes;
 using Digdir.Domain.Dialogporten.Application.Externals;
 using Digdir.Domain.Dialogporten.Application.Externals.AltinnAuthorization;
@@ -75,6 +76,11 @@ internal sealed class GetSeenLogQueryHandler : IRequestHandler<GetSeenLogQuery, 
         if (seenLog is null)
         {
             return new EntityNotFound<DialogSeenLog>(request.SeenLogId);
+        }
+
+        if (!_altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource))
+        {
+            return new Forbidden(Constants.AltinnAuthLevelToLow);
         }
 
         var dto = _mapper.Map<SeenLogDto>(seenLog);

@@ -116,11 +116,7 @@ internal sealed class GetDialogQueryHandler : IRequestHandler<GetDialogQuery, Ge
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        var resourcePolicyInformation = _db.ResourcePolicyInformation
-            .FirstOrDefault(x => x.Resource == dialog.ServiceResource);
-
-        if (resourcePolicyInformation is not null &&
-            !_altinnAuthorization.UserHasRequiredAuthLevel(resourcePolicyInformation.MinimumAuthenticationLevel))
+        if (!_altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource))
         {
             return new Forbidden(Constants.AltinnAuthLevelToLow);
         }
