@@ -28,6 +28,7 @@ public sealed class SearchDialogTransmissionEndpoint : Endpoint<SearchTransmissi
         await result.Match(
             dto => SendOkAsync(dto, ct),
             notFound => this.NotFoundAsync(notFound, ct),
-            deleted => this.GoneAsync(deleted, ct));
+            deleted => this.GoneAsync(deleted, ct),
+            forbidden => this.ForbiddenAsync(forbidden, ct));
     }
 }
