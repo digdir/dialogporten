@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.50.9](https://github.com/Altinn/dialogporten/compare/v1.50.8...v1.50.9) (2025-02-16)
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency bouncycastle.cryptography to 2.5.1 ([#1883](https://github.com/Altinn/dialogporten/issues/1883)) ([acf64d7](https://github.com/Altinn/dialogporten/commit/acf64d735882302d83376e1d5741a6289e98f345))
+* **deps:** update dependency xunit.runner.visualstudio to 3.0.2 ([#1884](https://github.com/Altinn/dialogporten/issues/1884)) ([77dfad9](https://github.com/Altinn/dialogporten/commit/77dfad996cf7701b0213f8083f6d043117d9736c))
+* **deps:** update hotchocolate monorepo to 15.0.3 ([#1885](https://github.com/Altinn/dialogporten/issues/1885)) ([c05a661](https://github.com/Altinn/dialogporten/commit/c05a661bdeec65cc2c7605c2b212006debe8f65a))
+* **deps:** update nginx docker tag to v1.27.4 ([#1886](https://github.com/Altinn/dialogporten/issues/1886)) ([54d840d](https://github.com/Altinn/dialogporten/commit/54d840dd034df244e571625833684d2e33b41f6b))
+
 ## [1.50.8](https://github.com/Altinn/dialogporten/compare/v1.50.7...v1.50.8) (2025-02-14)
 
 
