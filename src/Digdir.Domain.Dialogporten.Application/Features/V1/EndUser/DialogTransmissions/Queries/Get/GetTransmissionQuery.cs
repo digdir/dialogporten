@@ -83,7 +83,7 @@ internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmiss
 
         if (dto.IsAuthorized) return dto;
 
-        var urls = transmission.Attachments.SelectMany(a => a.Urls).ToList();
+        var urls = dto.Attachments.SelectMany(a => a.Urls).ToList();
         foreach (var url in urls)
         {
             url.Url = Constants.UnauthorizedUri;
