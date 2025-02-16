@@ -14,7 +14,7 @@ permissions:
   contents: write
   pull-requests: write
   packages: write
-  
+
 jobs:
   release-please:
     name: Release please
@@ -48,7 +48,7 @@ jobs:
   publish:
     name: Build and publish docker images
     needs: [release-please, check-for-changes]
-    if: needs.release-please.outputs.release_created == 'true' && needs.check-for-changes.outputs.hasBackendChanges == 'true'
+    if: needs.release-please.outputs.release_created == 'true'
     uses: ./.github/workflows/workflow-publish.yml
     secrets:
       GCR_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
@@ -82,4 +82,3 @@ jobs:
     secrets:
       SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
       SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID_FOR_CI_CD_STATUS }}
-        
