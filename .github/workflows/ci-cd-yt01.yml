@@ -147,7 +147,7 @@ jobs:
     name: "Run K6 performance tests"
     # we want the performance tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
     if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasInfraChanges == 'true') }}
-    needs: [deploy-apps, deploy-infra, check-for-changes]
+    needs: [run-performance-warmup]
     #needs: [deploy-apps, check-for-changes]
     uses: ./.github/workflows/workflow-run-k6-performance.yml
     secrets:
