@@ -27,6 +27,9 @@ on:
       abortOnFail:
         required: true
         type: boolean
+      numberOfEndUsers:
+        required: true
+        type: number
       ref:
         description: "The branch or tag ref to run the tests on. Using default checkout ref if not provided."
         required: false
@@ -84,3 +87,4 @@ jobs:
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}
+        NUMBER_OF_ENDUSERS: ${{ inputs.numberOfEndUsers }}
