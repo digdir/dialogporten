@@ -2,6 +2,7 @@
 
 API_VERSION=${API_VERSION:-v1}
 API_ENVIRONMENT=${API_ENVIRONMENT:-yt01}
+NUMBER_OF_ENDUSERS=${NUMBER_OF_ENDUSERS:-2799}
 failed=0
 kubectl config set-context --current --namespace=dialogporten
 
@@ -122,6 +123,7 @@ fi
 if ! k6 archive $filename \
      -e API_VERSION="$API_VERSION" \
      -e API_ENVIRONMENT="$API_ENVIRONMENT" \
+     -e NUMBER_OF_ENDUSERS="$NUMBER_OF_ENDUSERS" \
      -e TESTID=$testid $archive_args; then
     echo "Error: Failed to create k6 archive"
     exit 1
