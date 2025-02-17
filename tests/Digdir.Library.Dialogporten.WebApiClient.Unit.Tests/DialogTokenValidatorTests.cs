@@ -34,6 +34,18 @@ public class DialogTokenValidatorTests
     }
 
     [Fact]
+    public void ShouldThrowException_GivenNoPublicKeys()
+    {
+
+        // Arrange
+        var sut = GetSut(
+            DateTimeOffset.Parse("2025-02-17T09:00:00Z", CultureInfo.InvariantCulture));
+
+        // Assert
+        Assert.Throws<InvalidOperationException>(() => sut.Validate(DialogToken));
+    }
+
+    [Fact]
     public void ShouldReturnError_GivenMalformedToken()
     {
         // Arrange
@@ -48,6 +60,23 @@ public class DialogTokenValidatorTests
         Assert.False(result.IsValid);
         Assert.True(result.Errors.ContainsKey("token"));
         Assert.Contains("Invalid token format", result.Errors["token"]);
+    }
+
+    [Fact]
+    public void ShouldReturnError_GivenNoPublicWithCorrectKeyId()
+    {
+        // Arrange
+        var sut = GetSut(
+            DateTimeOffset.Parse("2025-02-14T09:00:00Z", CultureInfo.InvariantCulture),
+            ValidPublicKeyPairs[1]);
+
+        // Act
+        var result = sut.Validate(DialogToken);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.True(result.Errors.ContainsKey("token"));
+        Assert.Contains("Invalid signature", result.Errors["token"]);
     }
 
     [Fact]
@@ -86,7 +115,7 @@ public class DialogTokenValidatorTests
     }
 
     [Fact]
-    public void ShouldReturnError_GivenInvalidSignature()
+    public void ShouldReturnError_GivenTokenWithWrongSignature()
     {
         // Arrange
         var sut = GetSut(
