@@ -4,5 +4,6 @@
   DialogEventToAltinnForwarder_DialogDeletedDomainEvent,
   DialogEventToAltinnForwarder_DialogRestoredDomainEvent,
   DialogEventToAltinnForwarder_DialogSeenDomainEvent,
+  DialogEventToAltinnForwarder_DialogTransmissionCreatedDomainEvent,
   DialogEventToAltinnForwarder_DialogUpdatedDomainEvent
 ]
