@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Buffers.Text;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
@@ -158,21 +159,19 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
     private static bool TryDecodePart(ReadOnlySpan<char> tokenPart, Span<byte> buffer, out ReadOnlySpan<byte> span, out int length)
     {
         span = default;
-        length = 0;
-        try
-        {
-            if (!Base64Url.TryDecodeFromChars(tokenPart, buffer, out length))
-            {
-                return false;
-            }
-            span = buffer[..length];
-            return true;
-        }
-        catch (FormatException)
+        if (!TryDecodeFromChars(tokenPart, buffer, out length))
         {
             return false;
         }
 
+        span = buffer[..length];
+        return true;
+    }
+
+    private static bool TryDecodeFromChars(ReadOnlySpan<char> source, Span<byte> destination, out int bytesWritten)
+    {
+        var result = Base64Url.DecodeFromChars(source, destination, out _, out bytesWritten);
+        return result is OperationStatus.Done;
     }
 
     private static bool TryGetPublicKey(ReadOnlyCollection<PublicKeyPair> keyPairs, ReadOnlySpan<byte> header, [NotNullWhen(true)] out PublicKey? publicKey)
@@ -213,12 +212,8 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
                 value = reader.ValueSpan;
                 return true;
             }
-
         }
-        catch (JsonException)
-        {
-            return false;
-        }
+        catch (JsonException) { }
         return false;
     }
 

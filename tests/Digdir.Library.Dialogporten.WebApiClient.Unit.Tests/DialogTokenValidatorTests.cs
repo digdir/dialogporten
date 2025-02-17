@@ -82,7 +82,7 @@ public class DialogTokenValidatorTests
         Assert.Contains("Invalid token format", result.Errors["token"]);
     }
     [Fact]
-    public void ShouldReturnError_GivenNoPublicWithCorrectKeyId()
+    public void ShouldReturnError_GivenNoPublicKeyWithCorrectKeyId()
     {
         // Arrange
         var sut = GetSut(
@@ -102,7 +102,6 @@ public class DialogTokenValidatorTests
     [Fact]
     public void ShouldReturnError_GivenExpiredToken()
     {
-
         // Arrange
         var sut = GetSut(
             DateTimeOffset.Parse("2025-02-17T09:00:00Z", CultureInfo.InvariantCulture),
