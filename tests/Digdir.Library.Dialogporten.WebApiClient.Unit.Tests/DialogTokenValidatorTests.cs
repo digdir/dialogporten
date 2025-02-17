@@ -134,27 +134,6 @@ public class DialogTokenValidatorTests
     }
 
     [Fact]
-    public void ShouldReturnError_GivenTokenWithInvalidJsonInPayload()
-    {
-        // Arrange
-        var sut = GetSut(
-            DateTimeOffset.Parse(ValidTimeStampString, CultureInfo.InvariantCulture),
-            ValidPublicKeyPairs);
-
-        var tokenParts = DialogToken.Split('.');
-        tokenParts[1] = Base64Url.EncodeToString("invalid json payload"u8);
-        var token = string.Join(".", tokenParts);
-
-        // Act
-        var result = sut.Validate(token);
-
-        // Assert
-        Assert.False(result.IsValid);
-        Assert.True(result.Errors.ContainsKey("token"));
-        Assert.Contains("Invalid token format", result.Errors["token"]);
-    }
-
-    [Fact]
     public void ShouldReturnError_GivenTokenWithWrongSignature()
     {
         // Arrange
@@ -195,22 +174,19 @@ public class DialogTokenValidatorTests
     [Fact]
     public void ShouldReturnError_GivenMalformedJsonHeader()
     {
-        const string invalidHeader = """
-                                     {
-                                       "alg": "EdDSA",
-                                       "typ": "JWT",
-                                       "kid": "dp-staging-240322-o5ymn"
-                                     """;
+        var invalidHeader = """
+                            {
+                              "alg": "EdDSA",
+                              "typ": "JWT",
+                              "kid": "dp-staging-240322-o5ymn"
+                            """u8;
         // Arrange
         var sut = GetSut(
             DateTimeOffset.Parse(ValidTimeStampString, CultureInfo.InvariantCulture),
             ValidPublicKeyPairs);
 
         var tokenParts = DialogToken.Split('.');
-        tokenParts[0] = Encoding.UTF8.GetString(
-            Base64Url.EncodeToUtf8(
-                Encoding.UTF8.GetBytes(
-                    invalidHeader)));
+        tokenParts[0] = Base64Url.EncodeToString(invalidHeader);
         var token = string.Join(".", tokenParts);
 
         // Act
@@ -225,21 +201,18 @@ public class DialogTokenValidatorTests
     [Fact]
     public void ShouldReturnError_GivenMalformedJsonBody()
     {
-        const string invalidBody = """
-                                     {
-                                       "jti": "38cfdcb9-388b-47b8-a1bf-9f15b2819894",
-                                       "c": "urn:altinn:person:identifier-no:14886498226",
-                                     """;
+        var invalidBody = """
+                          {
+                            "jti": "38cfdcb9-388b-47b8-a1bf-9f15b2819894",
+                            "c": "urn:altinn:person:identifier-no:14886498226",
+                          """u8;
         // Arrange
         var sut = GetSut(
             DateTimeOffset.Parse(ValidTimeStampString, CultureInfo.InvariantCulture),
             ValidPublicKeyPairs);
 
         var tokenParts = DialogToken.Split('.');
-        tokenParts[1] = Encoding.UTF8.GetString(
-            Base64Url.EncodeToUtf8(
-                Encoding.UTF8.GetBytes(
-                    invalidBody)));
+        tokenParts[1] = Base64Url.EncodeToString(invalidBody);
         var token = string.Join(".", tokenParts);
 
         // Act
