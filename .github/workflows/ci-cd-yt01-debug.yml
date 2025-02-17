@@ -18,7 +18,7 @@ jobs:
       max-parallel: 4
       matrix:
         files:
-          - tests/k6/tests/serviceowner/performance/servceowner-search.js
+          - tests/k6/tests/serviceowner/performance/serviceowner-search.js
           - tests/k6/tests/serviceowner/performance/create-dialog.js
           - tests/k6/tests/serviceowner/performance/create-transmissions.js
           - tests/k6/tests/enduser/performance/enduser-search.js
