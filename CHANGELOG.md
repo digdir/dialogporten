@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.52.0](https://github.com/Altinn/dialogporten/compare/v1.51.0...v1.52.0) (2025-02-17)
+
+
+### Features
+
+* Allow setting Process/PrecedingProcess in dialog updates ([#1896](https://github.com/Altinn/dialogporten/issues/1896)) ([d3fc838](https://github.com/Altinn/dialogporten/commit/d3fc838257e86fb4e69b677d9fdbd5aa34e452f3))
+
+
+### Miscellaneous Chores
+
+* **performance:** add warmup to performance tests ([#1894](https://github.com/Altinn/dialogporten/issues/1894)) ([fa29d75](https://github.com/Altinn/dialogporten/commit/fa29d75d60758f2c4571c4d4c83b3540f5e0df32))
+
 ## [1.51.0](https://github.com/Altinn/dialogporten/compare/v1.50.9...v1.51.0) (2025-02-17)
 
 
