@@ -28,7 +28,7 @@ on:
         required: true
         type: boolean
       numberOfEndUsers:
-        required: false
+        required: true
         type: number
       ref:
         description: "The branch or tag ref to run the tests on. Using default checkout ref if not provided."
