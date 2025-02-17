@@ -69,7 +69,7 @@ internal sealed class SearchTransmissionQueryHandler : IRequestHandler<SearchTra
             return new EntityDeleted<DialogEntity>(request.DialogId);
         }
 
-        if (!_altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource))
+        if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
             return new Forbidden(Constants.AltinnAuthLevelToLow);
         }

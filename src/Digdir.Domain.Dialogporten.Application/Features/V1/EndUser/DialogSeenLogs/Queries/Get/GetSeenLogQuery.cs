@@ -78,7 +78,7 @@ internal sealed class GetSeenLogQueryHandler : IRequestHandler<GetSeenLogQuery, 
             return new EntityNotFound<DialogSeenLog>(request.SeenLogId);
         }
 
-        if (!_altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource))
+        if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
             return new Forbidden(Constants.AltinnAuthLevelToLow);
         }
