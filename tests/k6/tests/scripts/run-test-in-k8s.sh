@@ -175,7 +175,7 @@ EOF
 kubectl apply -f config.yml
 
 # Wait for the job to finish
-wait_timeout="${duration}100s"
+wait_timeout="${duration}200s"
 kubectl wait --for=jsonpath='{.status.stage}'=finished testrun/$name --timeout=$wait_timeout
 # Print the logs of the pods
 print_logs
