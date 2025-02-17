@@ -7,7 +7,7 @@ import { graphqlSearch } from "../../performancetest_common/simpleSearch.js";
 import { getEndUserTokens } from '../../../common/token.js';
 
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
-const numberOfEndUsers = 2799;
+const numberOfEndUsers = (__ENV.NUMBER_OF_ENDUSERS ?? 2799); // Max number of endusers from altinn-testtools now.
 
 
 /**
