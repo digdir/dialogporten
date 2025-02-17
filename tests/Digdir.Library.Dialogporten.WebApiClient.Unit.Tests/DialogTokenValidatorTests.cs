@@ -140,11 +140,7 @@ public class DialogTokenValidatorTests
             DateTimeOffset.Parse("2025-02-14T09:00:00Z", CultureInfo.InvariantCulture),
             ValidPublicKeyPairs);
 
-        // Swap payload with well formed JWT token. changed "l" from 3 -> 4
-        var tokenParts = DialogToken.Split('.');
-        tokenParts[1] =
-            "eyJqdGkiOiIzOGNmZGNiOS0zODhiLTQ3YjgtYTFiZi05ZjE1YjI4MTk4OTQiLCJjIjoidXJuOmFsdGlubjpwZXJzb246aWRlbnRpZmllci1ubzoxNDg4NjQ5ODIyNiIsImwiOjQsInAiOiJ1cm46YWx0aW5uOnBlcnNvbjppZGVudGlmaWVyLW5vOjE0ODg2NDk4MjI2IiwicyI6InVybjphbHRpbm46cmVzb3VyY2U6ZGFnbC1jb3JyZXNwb25kZW5jZSIsImkiOiIwMTk0ZmU4Mi05MjgwLTc3YTUtYTdjZC01ZmYwZTZhNmZhMDciLCJhIjoicmVhZCIsImlzcyI6Imh0dHBzOi8vcGxhdGZvcm0udHQwMi5hbHRpbm4ubm8vZGlhbG9ncG9ydGVuL2FwaS92MSIsImlhdCI6MTczOTUyMzM2NywibmJmIjoxNzM5NTIzMzY3LCJleHAiOjE3Mzk1MjM5Njd9";
-        var token = string.Join(".", tokenParts);
+        var token = UpdateTokenPayload(DialogToken, "l", "4");
 
         // Act
         var result = sut.Validate(token);
@@ -155,6 +151,24 @@ public class DialogTokenValidatorTests
         Assert.Contains("Invalid signature", result.Errors["token"]);
     }
 
+    [Fact]
+    public void ShouldReturnError_GivenTokenWithWrongAlg()
+    {
+        // Arrange
+        var sut = GetSut(
+            DateTimeOffset.Parse("2025-02-14T09:00:00Z", CultureInfo.InvariantCulture),
+            ValidPublicKeyPairs);
+
+        var token = UpdateTokenHeader(DialogToken, "alg", "RS512");
+
+        // Act
+        var result = sut.Validate(token);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.True(result.Errors.ContainsKey("token"));
+        Assert.Contains("Invalid signature", result.Errors["token"]);
+    }
     private static DialogTokenValidator GetSut(DateTimeOffset simulatedNow, params PublicKeyPair[] publicKeyPairs)
     {
         var keyCache = Substitute.For<IEdDsaSecurityKeysCache>();
@@ -167,14 +181,26 @@ public class DialogTokenValidatorTests
     private static PublicKey ToPublicKey(string key)
         => PublicKey.Import(SignatureAlgorithm.Ed25519, Base64Url.DecodeFromChars(key), KeyBlobFormat.RawPublicKey);
 
-    // #pragma warning disable IDE0060
-    //     private static string UpdateTokenParts(string part, string property, string value)
-    // #pragma warning restore IDE0060
-    //     {
-    //         var decodedPart = Base64Url.DecodeFromChars(part);
-    //         var json = JsonSerializer.Deserialize<JsonElement>(decodedPart);
-    // json.GetProperty(property);
-    //         var encodedpart = Base64Url.EncodeToUtf8(JsonSerializer.SerializeToUtf8Bytes(json));
-    //         return Encoding.UTF8.GetString(encodedpart);
-    //     }
+    private static string UpdateTokenParts(string part, string property, string value)
+    {
+        var decodedPart = Base64Url.DecodeFromChars(part);
+        var json = JsonSerializer.Deserialize<Dictionary<string, object>>(decodedPart)!;
+        json[property] = value;
+        var encodedPart = Base64Url.EncodeToUtf8(JsonSerializer.SerializeToUtf8Bytes(json));
+        return Encoding.UTF8.GetString(encodedPart);
+    }
+
+    private static string UpdateTokenPayload(string token, string property, string value)
+    {
+        var tokenParts = token.Split('.');
+        tokenParts[1] = UpdateTokenParts(tokenParts[1], property, value);
+        return string.Join(".", tokenParts);
+    }
+
+    private static string UpdateTokenHeader(string token, string property, string value)
+    {
+        var tokenParts = token.Split('.');
+        tokenParts[0] = UpdateTokenParts(tokenParts[0], property, value);
+        return string.Join(".", tokenParts);
+    }
 }
