@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.51.0](https://github.com/Altinn/dialogporten/compare/v1.50.9...v1.51.0) (2025-02-17)
+
+
+### Features
+
+* Add event for transmission created ([#1893](https://github.com/Altinn/dialogporten/issues/1893)) ([ae0f7dc](https://github.com/Altinn/dialogporten/commit/ae0f7dc5b34f1e3bdfb4026cbf3427cd19232306))
+
+
+### Bug Fixes
+
+* **webapi:** Mask unauthorized attachment URLs in EndUser transmission endpoints ([#1890](https://github.com/Altinn/dialogporten/issues/1890)) ([f2f817b](https://github.com/Altinn/dialogporten/commit/f2f817b9972152d2dce643288703d0477ce709f5))
+
+
+### Miscellaneous Chores
+
+* **ci:** Always push new container version tags on release ([#1887](https://github.com/Altinn/dialogporten/issues/1887)) ([7d31b3b](https://github.com/Altinn/dialogporten/commit/7d31b3b9f5f3b25f6d7254aed73d20e32c4309a2))
+
 ## [1.50.9](https://github.com/Altinn/dialogporten/compare/v1.50.8...v1.50.9) (2025-02-16)
 
 
