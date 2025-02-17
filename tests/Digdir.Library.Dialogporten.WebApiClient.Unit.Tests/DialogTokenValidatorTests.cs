@@ -134,6 +134,27 @@ public class DialogTokenValidatorTests
     }
 
     [Fact]
+    public void ShouldReturnError_GivenTokenWithInvalidJsonInPayload()
+    {
+        // Arrange
+        var sut = GetSut(
+            DateTimeOffset.Parse(ValidTimeStampString, CultureInfo.InvariantCulture),
+            ValidPublicKeyPairs);
+
+        var tokenParts = DialogToken.Split('.');
+        tokenParts[1] = Base64Url.EncodeToString("invalid json payload"u8);
+        var token = string.Join(".", tokenParts);
+
+        // Act
+        var result = sut.Validate(token);
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.True(result.Errors.ContainsKey("token"));
+        Assert.Contains("Invalid token format", result.Errors["token"]);
+    }
+
+    [Fact]
     public void ShouldReturnError_GivenTokenWithWrongSignature()
     {
         // Arrange
