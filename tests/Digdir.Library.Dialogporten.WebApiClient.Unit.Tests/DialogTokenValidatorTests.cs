@@ -1,6 +1,8 @@
 using System.Buffers.Text;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Text;
+using System.Text.Json;
 using Altinn.ApiClients.Dialogporten.Common;
 using Altinn.ApiClients.Dialogporten.Services;
 using NSec.Cryptography;
@@ -54,7 +56,7 @@ public class DialogTokenValidatorTests
             ValidPublicKeyPairs);
 
         // Act
-        var result = sut.Validate("This.TokenIsMalformed...");
+        var result = sut.Validate("This.TokenIsMalformed....");
 
         // Assert
         Assert.False(result.IsValid);
@@ -62,6 +64,22 @@ public class DialogTokenValidatorTests
         Assert.Contains("Invalid token format", result.Errors["token"]);
     }
 
+    [Fact]
+    public void ShouldReturnError_GivenInvalidToken()
+    {
+        // Arrange
+        var sut = GetSut(
+            DateTimeOffset.Parse("2025-02-14T09:00:00Z", CultureInfo.InvariantCulture),
+            ValidPublicKeyPairs);
+
+        // Act
+        var result = sut.Validate("This.TokenIs.Invalid");
+
+        // Assert
+        Assert.False(result.IsValid);
+        Assert.True(result.Errors.ContainsKey("token"));
+        Assert.Contains("Invalid token format", result.Errors["token"]);
+    }
     [Fact]
     public void ShouldReturnError_GivenNoPublicWithCorrectKeyId()
     {
@@ -148,4 +166,15 @@ public class DialogTokenValidatorTests
 
     private static PublicKey ToPublicKey(string key)
         => PublicKey.Import(SignatureAlgorithm.Ed25519, Base64Url.DecodeFromChars(key), KeyBlobFormat.RawPublicKey);
-};
+
+    // #pragma warning disable IDE0060
+    //     private static string UpdateTokenParts(string part, string property, string value)
+    // #pragma warning restore IDE0060
+    //     {
+    //         var decodedPart = Base64Url.DecodeFromChars(part);
+    //         var json = JsonSerializer.Deserialize<JsonElement>(decodedPart);
+    // json.GetProperty(property);
+    //         var encodedpart = Base64Url.EncodeToUtf8(JsonSerializer.SerializeToUtf8Bytes(json));
+    //         return Encoding.UTF8.GetString(encodedpart);
+    //     }
+}
