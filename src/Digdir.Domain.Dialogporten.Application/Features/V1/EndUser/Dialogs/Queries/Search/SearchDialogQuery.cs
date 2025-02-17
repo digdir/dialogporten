@@ -190,6 +190,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
         var serviceResources = paginatedList.Items
             .Select(x => x.ServiceResource)
+            .Distinct()
             .ToList();
 
         var resourcePolicyInformation = await _db.ResourcePolicyInformation
