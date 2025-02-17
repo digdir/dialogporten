@@ -87,4 +87,4 @@ jobs:
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}
-        NUMBER_OF_END_USERS: ${{ inputs.numberOfEndUsers }}
+        NUMBER_OF_ENDUSERS: ${{ inputs.numberOfEndUsers }}
