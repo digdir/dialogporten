@@ -32,6 +32,7 @@ jobs:
       parallelism: 1
       breakpoint: false
       abortOnFail: false
+      numberOfEndUsers: 200
     permissions:
       checks: write
       pull-requests: write
@@ -64,6 +65,7 @@ jobs:
       parallelism: 1
       breakpoint: false
       abortOnFail: false
+      numberOfEndUsers: 200
     permissions:
       checks: write
       pull-requests: write
