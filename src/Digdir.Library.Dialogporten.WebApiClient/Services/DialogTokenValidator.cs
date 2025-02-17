@@ -52,7 +52,7 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
     {
         decodedTokenParts = default;
         return TryGetTokenParts(token, out tokenParts)
-            && TryDecodeParts(tokenDecodeBuffer, tokenParts, out decodedTokenParts);
+               && TryDecodeParts(tokenDecodeBuffer, tokenParts, out decodedTokenParts);
     }
 
     private static bool TryGetTokenParts(ReadOnlySpan<char> token, out JwksTokenParts<char> tokenParts)
@@ -130,7 +130,7 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
         var signedPart = signedPartBuffer[..signedPartLength];
 
         return TryGetPublicKey(publicKeys, decodedTokenParts.Header, out var publicKey)
-            && SignatureAlgorithm.Ed25519.Verify(publicKey, signedPart, decodedTokenParts.Signature);
+               && SignatureAlgorithm.Ed25519.Verify(publicKey, signedPart, decodedTokenParts.Signature);
     }
 
     private bool VerifyExpiration(JwksTokenParts<byte> decodedTokenParts)
@@ -157,14 +157,22 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
 
     private static bool TryDecodePart(ReadOnlySpan<char> tokenPart, Span<byte> buffer, out ReadOnlySpan<byte> span, out int length)
     {
-        if (!Base64Url.TryDecodeFromChars(tokenPart, buffer, out length))
+        span = default;
+        length = 0;
+        try
         {
-            span = default;
+            if (!Base64Url.TryDecodeFromChars(tokenPart, buffer, out length))
+            {
+                return false;
+            }
+            span = buffer[..length];
+            return true;
+        }
+        catch (FormatException)
+        {
             return false;
         }
 
-        span = buffer[..length];
-        return true;
     }
 
     private static bool TryGetPublicKey(ReadOnlyCollection<PublicKeyPair> keyPairs, ReadOnlySpan<byte> header, [NotNullWhen(true)] out PublicKey? publicKey)
@@ -194,16 +202,23 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
 
     private static bool TryGetPropertyValue(ReadOnlySpan<byte> json, ReadOnlySpan<char> name, out ReadOnlySpan<byte> value)
     {
-        var reader = new Utf8JsonReader(json);
-        while (reader.Read())
-        {
-            if (!IsPropertyName(reader, name)) continue;
-            reader.Read();
-            value = reader.ValueSpan;
-            return true;
-        }
-
         value = default;
+        var reader = new Utf8JsonReader(json);
+        try
+        {
+            while (reader.Read())
+            {
+                if (!IsPropertyName(reader, name)) continue;
+                reader.Read();
+                value = reader.ValueSpan;
+                return true;
+            }
+
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
         return false;
     }
 
@@ -232,5 +247,3 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
         }
     }
 }
-
-
