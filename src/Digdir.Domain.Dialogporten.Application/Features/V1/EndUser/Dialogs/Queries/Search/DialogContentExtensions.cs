@@ -4,7 +4,7 @@ namespace Digdir.Domain.Dialogporten.Application.Features.V1.EndUser.Dialogs.Que
 
 internal static class DialogContentExtensions
 {
-    public static void TrySetNonSensitiveContent(this List<DialogContent> content)
+    public static void SetNonSensitiveContent(this List<DialogContent> content)
     {
         var nonSensitiveTitle = content.FirstOrDefault(x => x.TypeId == DialogContentType.Values.NonSensitiveTitle);
         if (nonSensitiveTitle is not null)

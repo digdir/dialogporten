@@ -205,7 +205,7 @@ internal sealed class SearchDialogQueryHandler : IRequestHandler<SearchDialogQue
 
             if (!_altinnAuthorization.UserHasRequiredAuthLevel(minimumAuthenticationLevel))
             {
-                dialog.Content.TrySetNonSensitiveContent();
+                dialog.Content.SetNonSensitiveContent();
             }
         }
         return paginatedList.ConvertTo(_mapper.Map<DialogDto>);
