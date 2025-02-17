@@ -66,3 +66,5 @@ export const baseUrlGraphql = baseUrls[__ENV.API_VERSION]["graphql"][__ENV.API_E
 
 export const sentinelValue = "dialogporten-e2e-sentinel";
 export const sentinelPerformanceValue = "dialogporten-e2e-sentinel-performance";
+export const activityActorId = __ENV.API_ENVIRONMENT == "yt01" ? "713431400" : "991825827";
+    
