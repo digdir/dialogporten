@@ -110,20 +110,18 @@ internal sealed class AltinnAuthorizationClient : IAltinnAuthorization
                || authorizedResourcesForSearch.DialogIds.Contains(dialog.Id);
     }
 
-    public bool UserHasRequiredAuthLevel(int minimumAuthenticationLevel)
+    public bool UserHasRequiredAuthLevel(int minimumAuthenticationLevel) =>
+        _user.GetPrincipal().TryGetAuthenticationLevel(out var authLevel) &&
+            minimumAuthenticationLevel <= authLevel;
+
+    public async Task<bool> UserHasRequiredAuthLevel(string serviceResource, CancellationToken cancellationToken)
     {
-        _user.GetPrincipal().TryGetAuthenticationLevel(out var authLevel);
+        var minimumAuthenticationLevel = await _db.ResourcePolicyInformation
+            .Where(x => x.Resource == serviceResource)
+            .Select(x => x.MinimumAuthenticationLevel)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        return minimumAuthenticationLevel <= authLevel;
-    }
-
-    public bool UserHasRequiredAuthLevel(string serviceResource)
-    {
-        var resourcePolicyInformation = _db.ResourcePolicyInformation
-            .FirstOrDefault(x => x.Resource == serviceResource);
-
-        return resourcePolicyInformation is null ||
-               UserHasRequiredAuthLevel(resourcePolicyInformation.MinimumAuthenticationLevel);
+        return UserHasRequiredAuthLevel(minimumAuthenticationLevel);
     }
 
     private static AuthorizedPartiesResult GetFlattenedAuthorizedParties(AuthorizedPartiesResult authorizedParties)

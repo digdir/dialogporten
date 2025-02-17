@@ -72,5 +72,5 @@ internal sealed class LocalDevelopmentAltinnAuthorization : IAltinnAuthorization
     public Task<bool> HasListAuthorizationForDialog(DialogEntity _, CancellationToken __) => Task.FromResult(true);
 
     public bool UserHasRequiredAuthLevel(int minimumAuthenticationLevel) => true;
-    public bool UserHasRequiredAuthLevel(string serviceResource) => true;
+    public Task<bool> UserHasRequiredAuthLevel(string serviceResource, CancellationToken _) => Task.FromResult(true);
 }
