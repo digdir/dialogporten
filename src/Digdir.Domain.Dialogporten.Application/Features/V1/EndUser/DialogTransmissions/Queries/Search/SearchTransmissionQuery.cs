@@ -74,6 +74,21 @@ internal sealed class SearchTransmissionQueryHandler : IRequestHandler<SearchTra
             return new Forbidden(Constants.AltinnAuthLevelToLow);
         }
 
-        return _mapper.Map<List<TransmissionDto>>(dialog.Transmissions);
+        var dto = _mapper.Map<List<TransmissionDto>>(dialog.Transmissions);
+
+        foreach (var transmission in dto)
+        {
+            transmission.IsAuthorized = authorizationResult.HasReadAccessToDialogTransmission(transmission.AuthorizationAttribute);
+
+            if (transmission.IsAuthorized) continue;
+
+            var urls = transmission.Attachments.SelectMany(a => a.Urls).ToList();
+            foreach (var url in urls)
+            {
+                url.Url = Constants.UnauthorizedUri;
+            }
+        }
+
+        return dto;
     }
 }
