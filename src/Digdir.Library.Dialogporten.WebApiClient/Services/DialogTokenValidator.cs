@@ -52,8 +52,28 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
         out JwksTokenParts<byte> decodedTokenParts)
     {
         decodedTokenParts = default;
-        return TryGetTokenParts(token, out tokenParts)
-               && TryDecodeParts(tokenDecodeBuffer, tokenParts, out decodedTokenParts);
+        if (!TryGetTokenParts(token, out tokenParts) ||
+            !TryDecodeParts(tokenDecodeBuffer, tokenParts, out decodedTokenParts))
+        {
+            return false;
+        }
+
+        // Validate that the header and body are valid JSON
+        return IsValidJson(decodedTokenParts.Header) &&
+               IsValidJson(decodedTokenParts.Body);
+    }
+
+    private static bool IsValidJson(ReadOnlySpan<byte> span)
+    {
+        var reader = new Utf8JsonReader(span);
+        try
+        {
+            while (reader.Read()) { }
+
+            return true;
+        }
+        catch (JsonException) { }
+        return false;
     }
 
     private static bool TryGetTokenParts(ReadOnlySpan<char> token, out JwksTokenParts<char> tokenParts)
@@ -203,17 +223,13 @@ internal sealed class DialogTokenValidator : IDialogTokenValidator
     {
         value = default;
         var reader = new Utf8JsonReader(json);
-        try
+        while (reader.Read())
         {
-            while (reader.Read())
-            {
-                if (!IsPropertyName(reader, name)) continue;
-                reader.Read();
-                value = reader.ValueSpan;
-                return true;
-            }
+            if (!IsPropertyName(reader, name)) continue;
+            reader.Read();
+            value = reader.ValueSpan;
+            return true;
         }
-        catch (JsonException) { }
         return false;
     }
 
