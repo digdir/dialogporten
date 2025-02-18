@@ -72,7 +72,7 @@ internal sealed class SearchSeenLogQueryHandler : IRequestHandler<SearchSeenLogQ
 
         if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
-            return new Forbidden(Constants.AltinnAuthLevelToLow);
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         return dialog.SeenLog

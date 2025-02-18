@@ -26,7 +26,7 @@ public sealed class DialogByIdForbidden : IDialogByIdError
 
 public sealed class DialogByIdForbiddenAuthLevelToLow : IDialogByIdError
 {
-    public string Message { get; set; } = Constants.AltinnAuthLevelToLow;
+    public string Message { get; set; } = Constants.AltinnAuthLevelTooLow;
 }
 
 public sealed class DialogByIdPayload

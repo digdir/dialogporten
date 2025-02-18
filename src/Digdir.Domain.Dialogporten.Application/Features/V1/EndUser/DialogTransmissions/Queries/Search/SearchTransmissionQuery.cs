@@ -71,7 +71,7 @@ internal sealed class SearchTransmissionQueryHandler : IRequestHandler<SearchTra
 
         if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
-            return new Forbidden(Constants.AltinnAuthLevelToLow);
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         var dto = _mapper.Map<List<TransmissionDto>>(dialog.Transmissions);

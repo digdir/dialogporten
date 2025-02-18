@@ -64,7 +64,7 @@ internal sealed class SearchActivityQueryHandler : IRequestHandler<SearchActivit
 
         if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
-            return new Forbidden(Constants.AltinnAuthLevelToLow);
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         return _mapper.Map<List<ActivityDto>>(dialog.Activities);

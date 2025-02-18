@@ -80,7 +80,7 @@ internal sealed class GetSeenLogQueryHandler : IRequestHandler<GetSeenLogQuery, 
 
         if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
-            return new Forbidden(Constants.AltinnAuthLevelToLow);
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         var dto = _mapper.Map<SeenLogDto>(seenLog);

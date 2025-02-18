@@ -58,7 +58,7 @@ internal sealed class SearchLabelAssignmentLogQueryHandler : IRequestHandler<Sea
 
         if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
-            return new Forbidden(Constants.AltinnAuthLevelToLow);
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         return _mapper.Map<List<LabelAssignmentLogDto>>(dialog.DialogEndUserContext.LabelAssignmentLogs);

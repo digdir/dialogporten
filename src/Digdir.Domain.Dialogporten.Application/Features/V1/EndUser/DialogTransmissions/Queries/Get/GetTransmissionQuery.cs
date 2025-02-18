@@ -74,7 +74,7 @@ internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmiss
 
         if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
-            return new Forbidden(Constants.AltinnAuthLevelToLow);
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         var transmission = dialog.Transmissions.FirstOrDefault();

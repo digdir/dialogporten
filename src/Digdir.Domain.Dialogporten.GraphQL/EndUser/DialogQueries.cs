@@ -28,7 +28,7 @@ public partial class Queries
             {
                 var response = new DialogByIdPayload();
 
-                if (forbidden.Reasons.Any(x => x.Contains(Constants.AltinnAuthLevelToLow)))
+                if (forbidden.Reasons.Any(x => x.Contains(Constants.AltinnAuthLevelTooLow)))
                 {
                     response.Errors.Add(new DialogByIdForbiddenAuthLevelToLow());
                 }

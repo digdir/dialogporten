@@ -70,7 +70,7 @@ internal sealed class GetActivityQueryHandler : IRequestHandler<GetActivityQuery
 
         if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
         {
-            return new Forbidden(Constants.AltinnAuthLevelToLow);
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         var activity = dialog.Activities.FirstOrDefault();
