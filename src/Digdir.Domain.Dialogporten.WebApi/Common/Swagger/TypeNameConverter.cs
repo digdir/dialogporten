@@ -110,7 +110,11 @@ internal static class TypeNameConverter
     {
         foreach (var prefix in prefixes)
         {
-            if (name.StartsWith(prefix))
+            if (name.Length <= prefix.Length)
+            {
+                continue;
+            }
+            if (name.StartsWith(prefix) && (name[prefix.Length] < 'a' || name[prefix.Length] > 'z'))
             {
                 name = name[prefix.Length..];
                 break;
