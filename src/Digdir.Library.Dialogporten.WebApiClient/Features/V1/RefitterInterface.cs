@@ -53,6 +53,12 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         public IEnumerable<DialogsEntities_DialogStatus> Status { get; set; }
 
         /// <summary>
+        /// If set to 'include', the result will include both deleted and non-deleted dialogs. If set to 'exclude', the result will only include non-deleted dialogs. If set to 'only', the result will only include deleted dialogs
+        /// </summary>
+        [Query] 
+        public V1Common_DeletedFilter? Deleted { get; set; }
+
+        /// <summary>
         /// Only return dialogs created after this date
         /// </summary>
         [Query(Format = "yyyy-MM-ddTHH:mm:ssZ")] 
@@ -188,7 +194,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
@@ -235,7 +241,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
@@ -313,7 +319,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
@@ -348,7 +354,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
@@ -391,7 +397,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
@@ -439,7 +445,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// </list>
         /// </returns>
@@ -481,7 +487,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
@@ -609,6 +615,10 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// <description>Unauthorized to create a dialog for the given serviceResource (not owned by authenticated organization or has additional scope requirements defined in policy).</description>
         /// </item>
         /// <item>
+        /// <term>409</term>
+        /// <description>Dialog with IdempotentKey 01941821-ffca-73a1-9335-435a882be014 has already been created.</description>
+        /// </item>
+        /// <item>
         /// <term>422</term>
         /// <description>Domain error occurred. See problem details for a list of errors.</description>
         /// </item>
@@ -617,6 +627,41 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         [Headers("Accept: application/json, application/problem+json")]
         [Post("/api/v1/serviceowner/dialogs")]
         Task<IApiResponse<string>> V1ServiceOwnerDialogsCreateDialog([Body] V1ServiceOwnerDialogsCommandsCreate_Dialog dto, CancellationToken cancellationToken = default);
+
+        /// <summary>Restore a dialog</summary>
+        /// <remarks>Restore a dialog. For more information see the documentation (link TBD).</remarks>
+        /// <returns>
+        /// A <see cref="Task"/> representing the <see cref="IApiResponse"/> instance containing the result:
+        /// <list type="table">
+        /// <listheader>
+        /// <term>Status</term>
+        /// <description>Description</description>
+        /// </listheader>
+        /// <item>
+        /// <term>204</term>
+        /// <description>The dialog aggregate was restored successfully.</description>
+        /// </item>
+        /// <item>
+        /// <term>401</term>
+        /// <description>Unauthorized</description>
+        /// </item>
+        /// <item>
+        /// <term>403</term>
+        /// <description>Forbidden</description>
+        /// </item>
+        /// <item>
+        /// <term>404</term>
+        /// <description>The given dialog ID was not found.</description>
+        /// </item>
+        /// <item>
+        /// <term>412</term>
+        /// <description>The supplied If-Match header did not match the current Revision value for the dialog. The request was not applied.</description>
+        /// </item>
+        /// </list>
+        /// </returns>
+        [Headers("Accept: application/problem+json")]
+        [Post("/api/v1/serviceowner/dialogs/{dialogId}/actions/restore")]
+        Task<IApiResponse> V1ServiceOwnerDialogsRestoreRestoreDialog(System.Guid dialogId, [Header("if-Match")] System.Guid? if_Match, CancellationToken cancellationToken = default);
 
         /// <summary>Permanently deletes a dialog</summary>
         /// <remarks>
@@ -645,7 +690,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>412</term>
@@ -719,7 +764,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or is already deleted.</description>
+        /// <description>The given dialog ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
@@ -1559,6 +1604,20 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         public System.DateTimeOffset? DueAt { get; set; }
 
         /// <summary>
+        /// Optional process identifier used to indicate a business process this dialog belongs to.
+        /// </summary>
+
+        [JsonPropertyName("process")]
+        public string Process { get; set; }
+
+        /// <summary>
+        /// Optional preceding process identifier to indicate the business process that preceded the process indicated in the "Process" field. Cannot be set without also "Process" being set.
+        /// </summary>
+
+        [JsonPropertyName("precedingProcess")]
+        public string PrecedingProcess { get; set; }
+
+        /// <summary>
         /// The expiration date for the dialog. This is the last date when the dialog is available for the end user.
         /// <br/>            
         /// <br/>After this date is passed, the dialog will be considered expired and no longer available for the end user in any
@@ -2342,6 +2401,13 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         public System.DateTimeOffset? DueAt { get; set; }
 
         /// <summary>
+        /// If deleted, the date and time when the deletion was performed.
+        /// </summary>
+
+        [JsonPropertyName("deletedAt")]
+        public System.DateTimeOffset? DeletedAt { get; set; }
+
+        /// <summary>
         /// The timestamp when the dialog will be made visible for authorized end users.
         /// </summary>
 
@@ -2543,6 +2609,14 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
 
         [JsonPropertyName("id")]
         public System.Guid Id { get; set; }
+
+        /// <summary>
+        /// An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.
+        /// <br/>            
+        /// </summary>
+
+        [JsonPropertyName("idempotentKey")]
+        public string IdempotentKey { get; set; }
 
         /// <summary>
         /// The unique identifier for the revision in UUIDv4 format.
@@ -2769,6 +2843,21 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
             get { return _additionalProperties ?? (_additionalProperties = new Dictionary<string, object>()); }
             set { _additionalProperties = value; }
         }
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.2.0.0 (NJsonSchema v11.1.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum V1Common_DeletedFilter
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Exclude")]
+        Exclude = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Include")]
+        Include = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Only")]
+        Only = 2,
 
     }
 
@@ -3364,6 +3453,13 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
 
         [JsonPropertyName("id")]
         public System.Guid? Id { get; set; }
+
+        /// <summary>
+        /// An optional key to ensure idempotency in dialog creation. If provided, it allows for the safe re-submission of the same dialog creation request without creating duplicate entries.
+        /// </summary>
+
+        [JsonPropertyName("idempotentKey")]
+        public string IdempotentKey { get; set; }
 
         /// <summary>
         /// The service identifier for the service that the dialog is related to in URN-format.
