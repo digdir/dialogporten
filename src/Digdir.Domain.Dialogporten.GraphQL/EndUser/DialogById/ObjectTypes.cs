@@ -24,7 +24,7 @@ public sealed class DialogByIdForbidden : IDialogByIdError
     public string Message { get; set; } = "Forbidden";
 }
 
-public sealed class DialogByIdForbiddenAuthLevelToLow : IDialogByIdError
+public sealed class DialogByIdForbiddenAuthLevelTooLow : IDialogByIdError
 {
     public string Message { get; set; } = Constants.AltinnAuthLevelTooLow;
 }
