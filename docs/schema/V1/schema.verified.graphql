@@ -141,6 +141,10 @@ type DialogByIdForbidden implements DialogByIdError {
   message: String!
 }
 
+type DialogByIdForbiddenAuthLevelToLow implements DialogByIdError {
+  message: String!
+}
+
 type DialogByIdNotFound implements DialogByIdError {
   message: String!
 }
