@@ -2,7 +2,7 @@ import { enduserSearch, emptySearchThresholds } from '../../performancetest_comm
 import { getEndUserTokens } from '../../../common/token.js';
 import { randomItem } from '../../../common/k6-utils.js';
 
-const defaultNumberOfEndUsers = 2799; // Max number of endusers from altinn-testtools now. 
+const defaultNumberOfEndUsers = (__ENV.NUMBER_OF_ENDUSERS ?? 2799); // Max number of endusers from altinn-testtools now. 
 
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 
