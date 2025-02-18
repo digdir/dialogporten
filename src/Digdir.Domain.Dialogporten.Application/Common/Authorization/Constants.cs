@@ -10,6 +10,8 @@ public static class Constants
     public const string TransmissionReadAction = "transmissionread";
     public static readonly Uri UnauthorizedUri = new("urn:dialogporten:unauthorized");
 
+    public const string IdportenLoaSubstantial = "idporten-loa-substantial";
+    public const string IdportenLoaHigh = "idporten-loa-high";
     public const string AltinnAuthLevelToLow = "Altinn authentication level too low.";
 
     public const string DisableAltinnEventsRequiresAdminScope =
