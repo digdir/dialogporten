@@ -12,6 +12,8 @@ using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Co
 using Digdir.Domain.Dialogporten.Application.Features.V1.ServiceOwner.Dialogs.Commands.Restore;
 using Digdir.Domain.Dialogporten.Domain.Actors;
 using Digdir.Domain.Dialogporten.Domain.Attachments;
+using Digdir.Domain.Dialogporten.Domain.Common.DomainEvents;
+using Digdir.Domain.Dialogporten.Domain.Common.EventPublisher;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Entities.Transmissions;
 using Digdir.Domain.Dialogporten.Domain.Dialogs.Events.Activities;
 using Digdir.Library.Entity.Abstractions.Features.Identifiable;
@@ -33,6 +35,26 @@ public class DomainEventsTests(DialogApplication application) : ApplicationColle
         });
 
         Mapper = mapperConfiguration.CreateMapper();
+    }
+
+    [Fact]
+    public void All_DomainEvents_Must_Have_A_Mapping_In_CloudEventTypes()
+    {
+        var domainEventTypes = typeof(IDomainEvent).Assembly.GetTypes()
+            .Where(type => typeof(IDomainEvent).IsAssignableFrom(type)
+                           && !type.IsInterface
+                           // DialogActivityCreatedDomainEvent maps based on activity type
+                           // See All_DialogActivityTypes_Must_Have_A_Mapping_In_CloudEventTypes
+                           && type != typeof(DialogActivityCreatedDomainEvent)
+                           && type != typeof(DomainEvent))
+            .ToList();
+
+        // Act/Assert
+        domainEventTypes.ForEach(domainEventType =>
+        {
+            Action act = () => CloudEventTypes.Get(domainEventType.Name);
+            act.Should().NotThrow($"all domain events must have a mapping in {nameof(CloudEventTypes)} ({domainEventType.Name} is missing)");
+        });
     }
 
     [Fact]
