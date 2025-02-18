@@ -327,7 +327,7 @@
         },
         "type": "object"
       },
-      "V1Common_dFilter": {
+      "V1Common_DeletedFilter": {
         "description": "",
         "enum": [
           "Exclude",
@@ -5735,7 +5735,7 @@
             "schema": {
               "allOf": [
                 {
-                  "$ref": "#/components/schemas/V1Common_dFilter"
+                  "$ref": "#/components/schemas/V1Common_DeletedFilter"
                 }
               ],
               "nullable": true
