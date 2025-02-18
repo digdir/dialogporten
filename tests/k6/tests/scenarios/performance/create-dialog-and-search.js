@@ -2,7 +2,7 @@
  * Performance test for creating dialogs and searching dialogs. 
  * Run: k6 run tests/k6/tests/scenarios/performance/create-dialog-and-search.js -e env=yt01 -e svus=1 -e evus=1 -e duration=1m 
  */
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { randomItem } from '../../../common/k6-utils.js';
 import { enduserSearch } from '../../performancetest_common/simpleSearch.js';
 import { createDialog } from '../../performancetest_common/createDialog.js';
 import { serviceOwners, endUsersWithTokens } from '../../performancetest_common/readTestdata.js';

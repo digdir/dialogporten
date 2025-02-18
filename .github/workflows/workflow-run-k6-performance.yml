@@ -27,6 +27,14 @@ on:
       abortOnFail:
         required: true
         type: boolean
+      numberOfEndUsers:
+        required: true
+        type: number
+      ref:
+        description: "The branch or tag ref to run the tests on. Using default checkout ref if not provided."
+        required: false
+        default: ${{ github.ref }}
+        type: string
     secrets:
       AZURE_CLIENT_ID:
         required: true
@@ -42,6 +50,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        ref: ${{ inputs.ref }}
     - name: OIDC Login to Azure Public Cloud
       uses: azure/login@v2
       with:
@@ -77,3 +87,4 @@ jobs:
       env:
         API_ENVIRONMENT: ${{ inputs.environment }}
         API_VERSION: ${{ inputs.apiVersion }}
+        NUMBER_OF_ENDUSERS: ${{ inputs.numberOfEndUsers }}

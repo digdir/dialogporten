@@ -109,34 +109,75 @@ jobs:
       checks: write
       pull-requests: write
 
+  run-performance-warmup:
+    name: "Run K6 warmup tests"
+    # we want the performance tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
+    if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasInfraChanges == 'true') }}
+    needs: [deploy-apps, deploy-infra, check-for-changes]
+    uses: ./.github/workflows/workflow-run-k6-performance.yml
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        files:
+          - tests/k6/tests/serviceowner/performance/serviceowner-search.js
+          - tests/k6/tests/serviceowner/performance/create-dialog.js
+          - tests/k6/tests/serviceowner/performance/create-transmissions.js
+          - tests/k6/tests/enduser/performance/enduser-search.js
+      fail-fast: false
+    with:
+      environment: yt01
+      apiVersion: v1
+      vus: 1
+      duration: 1m
+      testSuitePath: ${{ matrix.files }}
+      parallelism: 1
+      breakpoint: false
+      abortOnFail: false
+      numberOfEndUsers: 200
+    permissions:
+      checks: write
+      pull-requests: write
+      id-token: write
+      contents: read
+
   run-performance-tests:
     name: "Run K6 performance tests"
     # we want the performance tests to be dependent on deployment of infrastructure and apps, but if infrastructure is skipped, we still want to run the tests
     if: ${{ always() && !failure() && !cancelled() && (needs.check-for-changes.outputs.hasBackendChanges == 'true' || needs.check-for-changes.outputs.hasInfraChanges == 'true') }}
-    needs: [deploy-apps, deploy-infra, check-for-changes]
+    needs: [run-performance-warmup]
     #needs: [deploy-apps, check-for-changes]
-    uses: ./.github/workflows/workflow-run-k6-ci-cd-yt01.yml
+    uses: ./.github/workflows/workflow-run-k6-performance.yml
     secrets:
-      TOKEN_GENERATOR_USERNAME: ${{ secrets.TOKEN_GENERATOR_USERNAME }}
-      TOKEN_GENERATOR_PASSWORD: ${{ secrets.TOKEN_GENERATOR_PASSWORD }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
     strategy:
-      max-parallel: 1
+      max-parallel: 4
       matrix:
         files:
           - tests/k6/tests/serviceowner/performance/serviceOwnerSearchWithThresholds.js
           - tests/k6/tests/serviceowner/performance/createDialogWithThresholds.js
+          - tests/k6/tests/serviceowner/performance/createTransmissionsWithThresholds.js
           - tests/k6/tests/enduser/performance/enduserSearchWithThresholds.js
       fail-fast: false
     with:
       environment: yt01
       apiVersion: v1
       vus: 1
-      duration: 30s
+      duration: 60s
       testSuitePath: ${{ matrix.files }}
+      parallelism: 1
+      breakpoint: false
+      abortOnFail: false
+      numberOfEndUsers: 200
       ref: "refs/tags/v${{ github.event.client_payload.version }}"
     permissions:
       checks: write
       pull-requests: write
+      id-token: write
+      contents: read
 
   send-slack-message-on-failure:
     name: Send Slack message on failure

@@ -2,12 +2,12 @@
  * The performance test for GraphQL search.
  * Run: k6 run tests/k6/tests/graphql/performance/graphql-search.js --vus 1 --iterations 1 -e env=yt01
  */
-import { randomItem } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
+import { randomItem } from '../../../common/k6-utils.js';
 import { graphqlSearch } from "../../performancetest_common/simpleSearch.js";
 import { getEndUserTokens } from '../../../common/token.js';
 
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
-const numberOfEndUsers = 2799;
+const numberOfEndUsers = (__ENV.NUMBER_OF_ENDUSERS ?? 2799); // Max number of endusers from altinn-testtools now.
 
 
 /**

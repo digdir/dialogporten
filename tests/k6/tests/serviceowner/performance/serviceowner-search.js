@@ -1,8 +1,6 @@
 import { serviceownerSearch, emptySearchThresholds } from '../../performancetest_common/simpleSearch.js'
-import { serviceOwners } from '../../performancetest_common/readTestdata.js';
-import { validateTestData } from '../../performancetest_common/readTestdata.js';
-export { setup as setup } from '../../performancetest_common/readTestdata.js';
-
+import { serviceOwners, endUsers } from '../../performancetest_common/readTestdata.js';
+import { randomItem } from '../../../common/k6-utils.js';
 const tag_name = 'serviceowner search';
 const traceCalls = (__ENV.traceCalls ?? 'false') === 'true';
 
@@ -17,7 +15,6 @@ export let options = {
 
   
 export default function(data) {
-    const { endUsers, index } = validateTestData(data, serviceOwners);
-    serviceownerSearch(serviceOwners[0], endUsers[index], tag_name, traceCalls);
+    serviceownerSearch(serviceOwners[0], randomItem(endUsers), tag_name, traceCalls);
 }
 
