@@ -30,7 +30,7 @@ public partial class Queries
 
                 if (forbidden.Reasons.Any(x => x.Contains(Constants.AltinnAuthLevelTooLow)))
                 {
-                    response.Errors.Add(new DialogByIdForbiddenAuthLevelToLow());
+                    response.Errors.Add(new DialogByIdForbiddenAuthLevelTooLow());
                 }
                 else
                 {
