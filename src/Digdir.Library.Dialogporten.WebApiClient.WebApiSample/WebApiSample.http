@@ -1,5 +1,5 @@
 @HostAddress = http://localhost:5006
-@dialogId = "DIALOG_ID_HERE"
+@dialogId = DIALOG_ID_HERE
 @dialogToken = "DIALOG_TOKEN_HERE"
 
 ### Verify DialogToken
@@ -12,5 +12,5 @@ Accept: application/json
 }
 
 ### Get dialog by id
-GET {{HostAddress}}/dialog/{{dialogId}}}
+GET {{HostAddress}}/dialog/{{dialogId}}
 Accept: application/json
