@@ -18,7 +18,7 @@ public sealed class GetTransmissionQuery : IRequest<GetTransmissionResult>
 }
 
 [GenerateOneOf]
-public sealed partial class GetTransmissionResult : OneOfBase<TransmissionDto, EntityNotFound, EntityDeleted>;
+public sealed partial class GetTransmissionResult : OneOfBase<TransmissionDto, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmissionQuery, GetTransmissionResult>
 {
@@ -70,6 +70,11 @@ internal sealed class GetTransmissionQueryHandler : IRequestHandler<GetTransmiss
         if (dialog.Deleted)
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
+        }
+
+        if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
+        {
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         var transmission = dialog.Transmissions.FirstOrDefault();

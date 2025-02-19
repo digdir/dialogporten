@@ -18,4 +18,7 @@ public interface IAltinnAuthorization
         CancellationToken cancellationToken = default);
 
     Task<bool> HasListAuthorizationForDialog(DialogEntity dialog, CancellationToken cancellationToken);
+
+    bool UserHasRequiredAuthLevel(int minimumAuthenticationLevel);
+    Task<bool> UserHasRequiredAuthLevel(string serviceResource, CancellationToken cancellationToken);
 }

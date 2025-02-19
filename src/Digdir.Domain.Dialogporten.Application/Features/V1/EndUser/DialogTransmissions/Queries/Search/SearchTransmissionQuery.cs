@@ -16,7 +16,7 @@ public sealed class SearchTransmissionQuery : IRequest<SearchTransmissionResult>
 }
 
 [GenerateOneOf]
-public sealed partial class SearchTransmissionResult : OneOfBase<List<TransmissionDto>, EntityNotFound, EntityDeleted>;
+public sealed partial class SearchTransmissionResult : OneOfBase<List<TransmissionDto>, EntityNotFound, EntityDeleted, Forbidden>;
 
 internal sealed class SearchTransmissionQueryHandler : IRequestHandler<SearchTransmissionQuery, SearchTransmissionResult>
 {
@@ -67,6 +67,11 @@ internal sealed class SearchTransmissionQueryHandler : IRequestHandler<SearchTra
         if (dialog.Deleted)
         {
             return new EntityDeleted<DialogEntity>(request.DialogId);
+        }
+
+        if (!await _altinnAuthorization.UserHasRequiredAuthLevel(dialog.ServiceResource, cancellationToken))
+        {
+            return new Forbidden(Constants.AltinnAuthLevelTooLow);
         }
 
         var dto = _mapper.Map<List<TransmissionDto>>(dialog.Transmissions);

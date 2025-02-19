@@ -2258,6 +2258,24 @@
               }
             ]
           },
+          "nonSensitiveSummary": {
+            "description": "An optional non-sensitive summary of the dialog and its current state.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
+          "nonSensitiveTitle": {
+            "description": "An optional non-sensitive title of the dialog.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
           "senderName": {
             "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Must be text/plain if supplied.\nSupported media types: text/plain",
             "nullable": true,
@@ -2912,6 +2930,24 @@
               }
             ]
           },
+          "nonSensitiveSummary": {
+            "description": "An optional non-sensitive summary of the dialog and its current state.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
+          "nonSensitiveTitle": {
+            "description": "An optional non-sensitive title of the dialog.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
           "senderName": {
             "description": "Overridden sender name. If not supplied, assume \u0022org\u0022 as the sender name. Must be text/plain if supplied.",
             "nullable": true,
@@ -3360,6 +3396,24 @@
           },
           "mainContentReference": {
             "description": "Front-channel embedded content. Used to dynamically embed content in the frontend from an external URL. Must be HTTPS.\nAllowed media types: application/vnd.dialogporten.frontchannelembed\u002Bjson;type=markdown",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
+          "nonSensitiveSummary": {
+            "description": "An optional non-sensitive summary of the dialog and its current state.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
+          "nonSensitiveTitle": {
+            "description": "An optional non-sensitive title of the dialog.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
             "nullable": true,
             "oneOf": [
               {
@@ -4055,6 +4109,24 @@
         "properties": {
           "extendedStatus": {
             "description": "Used as the human-readable label used to describe the \u0022ExtendedStatus\u0022 field.",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
+          "nonSensitiveSummary": {
+            "description": "An optional non-sensitive summary of the dialog and its current state.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/V1CommonContent_ContentValue"
+              }
+            ]
+          },
+          "nonSensitiveTitle": {
+            "description": "An optional non-sensitive title of the dialog.\nUsed for search and list views if the user authorization does not meet the required eIDAS level",
             "nullable": true,
             "oneOf": [
               {
