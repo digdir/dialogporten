@@ -6302,6 +6302,16 @@
             },
             "description": "The given dialog ID was not found or is deleted"
           },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The dialog with the given key is removed"
+          },
           "412": {
             "content": {
               "application/json": {
