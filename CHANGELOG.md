@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.53.0](https://github.com/Altinn/dialogporten/compare/v1.52.0...v1.53.0) (2025-02-19)
+
+
+### Features
+
+* Enforce minimum auth level requirements on dialogs ([#1875](https://github.com/Altinn/dialogporten/issues/1875)) ([37febf6](https://github.com/Altinn/dialogporten/commit/37febf6d7d5ec3c7cc41bdded520f9172464af33))
+
+
+### Bug Fixes
+
+* **graphql:** Typo in auth level error type name ([#1904](https://github.com/Altinn/dialogporten/issues/1904)) ([b3d9ad8](https://github.com/Altinn/dialogporten/commit/b3d9ad80468d554c00199618da405de4323eb842))
+* Return new revision ETag on system label update ([#1903](https://github.com/Altinn/dialogporten/issues/1903)) ([2e763cd](https://github.com/Altinn/dialogporten/commit/2e763cdb8c493ae32dfd6d62298060db3dd947e9))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency testcontainers.postgresql to 4.2.0 ([#1908](https://github.com/Altinn/dialogporten/issues/1908)) ([9f76f69](https://github.com/Altinn/dialogporten/commit/9f76f690a30fd9a4051a0a082bd420ebec9932ac))
+* **deps:** update jaegertracing/all-in-one docker tag to v1.66.0 ([#1910](https://github.com/Altinn/dialogporten/issues/1910)) ([29877d7](https://github.com/Altinn/dialogporten/commit/29877d76a5d47602d5c6ad90d873e0c5cfbac7d1))
+* **deps:** update microsoft dependencies ([#1907](https://github.com/Altinn/dialogporten/issues/1907)) ([c916575](https://github.com/Altinn/dialogporten/commit/c916575ec4b5d6750046bc7cacb79079bd360a86))
+* updated TypeNameConverter ([#1900](https://github.com/Altinn/dialogporten/issues/1900)) ([f68c112](https://github.com/Altinn/dialogporten/commit/f68c11204277829a9a4f6b0fab0979c9188f2d64))
+
 ## [1.52.0](https://github.com/Altinn/dialogporten/compare/v1.51.0...v1.52.0) (2025-02-17)
 
 
