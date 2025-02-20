@@ -284,7 +284,7 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// </item>
         /// <item>
         /// <term>404</term>
-        /// <description>The given dialog ID was not found or was deleted, or the given transmission ID was not found.</description>
+        /// <description>The specified dialog ID or transmission ID was not found.</description>
         /// </item>
         /// <item>
         /// <term>410</term>
