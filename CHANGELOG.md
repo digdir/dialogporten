@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.55.0](https://github.com/Altinn/dialogporten/compare/v1.54.0...v1.55.0) (2025-02-20)
+
+
+### Features
+
+* **webapi:** Add flag for disabling SystemLabel reset ([#1921](https://github.com/Altinn/dialogporten/issues/1921)) ([a5689f2](https://github.com/Altinn/dialogporten/commit/a5689f2c542a60ec21b28c5c6ace6fa9c210abdf))
+
+
+### Bug Fixes
+
+* **webapi:** Add missing 404 status code in activity list swagger schema ([#1924](https://github.com/Altinn/dialogporten/issues/1924)) ([8f382cd](https://github.com/Altinn/dialogporten/commit/8f382cd9bcb27f09764ca84d35f372871bdb165e))
+* **webapi:** Add missing status codes in swagger docs for transmissions endpoints ([#1926](https://github.com/Altinn/dialogporten/issues/1926)) ([2458d6a](https://github.com/Altinn/dialogporten/commit/2458d6a48e7ca24df161238de9be57fc5bd44cb7))
+
+
+### Miscellaneous Chores
+
+* **ci:** Releasing NuGet depends on app-deploy ([#1920](https://github.com/Altinn/dialogporten/issues/1920)) ([37f9990](https://github.com/Altinn/dialogporten/commit/37f9990fcc7e0fde3b1058020d73a230fbd77bae))
+* **ci:** Use correct project path for NuGet publishing ([#1925](https://github.com/Altinn/dialogporten/issues/1925)) ([7507187](https://github.com/Altinn/dialogporten/commit/750718779aef8d63bb42ac2cd107877683f86d30))
+
 ## [1.54.0](https://github.com/Altinn/dialogporten/compare/v1.53.0...v1.54.0) (2025-02-20)
 
 
