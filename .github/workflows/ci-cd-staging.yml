@@ -17,11 +17,6 @@ jobs:
       environment: staging
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
-      
-  get-current-version:
-    name: Get current version
-    uses: ./.github/workflows/workflow-get-current-version.yml
-
 
   check-for-changes:
     name: Check for changes
@@ -86,10 +81,10 @@ jobs:
 
   publish-sdk-to-nuget:
     uses: ./.github/workflows/workflow-publish-nuget.yml
-    needs: [ get-current-version, check-for-changes ]
+    needs: [ check-for-changes ]
     if: ${{ needs.check-for-changes.outputs.hasSwaggerSchemaChanges == 'true' }}
     with:
-      version: ${{ needs.get-current-version.outputs.version }}
+      version: ${{ github.event.client_payload.version }}-rc
       path: 'src/Digdir.Library.Dialogporten.WebApiClient/Digdir.Library.Dialogporten.WebApiClient.csproj'
       source: 'https://api.nuget.org/v3/index.json'
     secrets:
