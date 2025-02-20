@@ -41,14 +41,4 @@ var services = new ServiceCollection();
 services.AddSingleton<IConfiguration>(configuration);
 
 services.AddDialogportenClient();
-services.AddDialogTokenVerifer();
-
-var dialogportenClient = serviceProvider.GetRequiredService<IServiceownerApi>();
-var verifier = serviceProvider.GetRequiredService<DialogTokenVerifier>();
 ```
-
-Basic usage
-
-```C#
-```
-
