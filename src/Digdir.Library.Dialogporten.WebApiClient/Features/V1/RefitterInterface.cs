@@ -727,9 +727,13 @@ namespace Altinn.ApiClients.Dialogporten.Features.V1
         /// <term>403</term>
         /// <description>Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy).</description>
         /// </item>
+        /// <item>
+        /// <term>404</term>
+        /// <description>The given dialog ID was not found.</description>
+        /// </item>
         /// </list>
         /// </returns>
-        [Headers("Accept: application/json")]
+        [Headers("Accept: application/json, application/problem+json")]
         [Get("/api/v1/serviceowner/dialogs/{dialogId}/activities")]
         Task<IApiResponse<ICollection<V1ServiceOwnerDialogActivitiesQueriesSearch_Activity>>> V1ServiceOwnerDialogActivitiesSearchSearchDialogActivity(System.Guid dialogId, CancellationToken cancellationToken = default);
 
