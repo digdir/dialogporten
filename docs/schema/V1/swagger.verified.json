@@ -5619,6 +5619,19 @@
           },
           "403": {
             "description": "Unauthorized to get the supplied dialog (not owned by authenticated organization or has additional scope requirements defined in policy)."
+          },
+          "404": {
+            "content": {
+              "application/problem\u002Bjson": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The given dialog ID was not found."
+          },
+          "410": {
+            "description": "Entity with the given key(s) is removed."
           }
         },
         "security": [
@@ -5681,7 +5694,10 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or was deleted, or the given transmission ID was not found."
+            "description": "The specified dialog ID or transmission ID was not found."
+          },
+          "410": {
+            "description": "Entity with the given key(s) is removed."
           }
         },
         "security": [
@@ -7268,7 +7284,7 @@
                 }
               }
             },
-            "description": "The given dialog ID was not found or was deleted, or the given transmission ID was not found."
+            "description": "The specified dialog ID or transmission ID was not found."
           },
           "410": {
             "description": "Entity with the given key(s) is removed."
