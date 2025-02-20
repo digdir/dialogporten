@@ -109,7 +109,7 @@ jobs:
 
   publish-schema-npm:
     name: Publish schema npm package
-    needs: [ check-for-changes, deploy-apps ]
+    needs: [check-for-changes, deploy-apps]
     if: ${{ always() && !failure() && !cancelled() && needs.check-for-changes.outputs.hasSwagggerSchemaChanges == 'true' || needs.check-for-changes.outputs.hasGqlSchemaChanges == 'true'}}
     uses: ./.github/workflows/workflow-publish-schema.yml
     with:
