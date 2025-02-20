@@ -1,5 +1,24 @@
 # Changelog
 
+## [1.54.0](https://github.com/Altinn/dialogporten/compare/v1.53.0...v1.54.0) (2025-02-20)
+
+
+### Features
+
+* Create Dialogporten Serviceowner client library ([#1831](https://github.com/Altinn/dialogporten/issues/1831)) ([bb3ebc3](https://github.com/Altinn/dialogporten/commit/bb3ebc3d8d577497bd7eafe9c82d81e747321b99))
+* push WebApi SDK to NuGet ([#1916](https://github.com/Altinn/dialogporten/issues/1916)) ([dee4e59](https://github.com/Altinn/dialogporten/commit/dee4e59d9d2819382af1c90dbe8a28aea414a5d6))
+
+
+### Bug Fixes
+
+* **webapi:** Add missing query param for disabling Altinn events to patch endpoint ([#1915](https://github.com/Altinn/dialogporten/issues/1915)) ([4b44b4e](https://github.com/Altinn/dialogporten/commit/4b44b4e271dbdbd8194d5e19194a7d20af93a240))
+* **webapi:** Return 410 GONE for deleted dialogs on patch endpoint ([#1912](https://github.com/Altinn/dialogporten/issues/1912)) ([ed30408](https://github.com/Altinn/dialogporten/commit/ed3040889b2cb3e936e5e320be9e57c80b8b356d))
+
+
+### Miscellaneous Chores
+
+* **deps:** update dependency Verify.Xunit to 28.11.0 ([#1918](https://github.com/Altinn/dialogporten/issues/1918)) ([d5bf6ed](https://github.com/Altinn/dialogporten/commit/d5bf6edf6f4966e73690d379361368576b7bdba4))
+
 ## [1.53.0](https://github.com/Altinn/dialogporten/compare/v1.52.0...v1.53.0) (2025-02-19)
 
 
