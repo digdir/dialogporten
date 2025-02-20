@@ -17,6 +17,11 @@ jobs:
       environment: staging
     secrets:
       GH_TOKEN: ${{ secrets.RELEASE_VERSION_STORAGE_PAT }}
+      
+  get-current-version:
+    name: Get current version
+    uses: ./.github/workflows/workflow-get-current-version.yml
+
 
   check-for-changes:
     name: Check for changes
@@ -79,16 +84,16 @@ jobs:
       runMigration: ${{ needs.check-for-changes.outputs.hasMigrationChanges == 'true' }}
       ref: "refs/tags/v${{ github.event.client_payload.version }}"
 
-#  publish-sdk-to-nuget:
-#    uses: ./.github/workflows/workflow-publish-nuget.yml
-#    needs: [ get-current-version, check-for-changes ]
-#    if: ${{ needs.check-for-changes.outputs.hasSwaggerSchemaChanges == 'true' }}
-#    with:
-#      version: ${{ needs.get-current-version.outputs.version }}
-#      path: 'src/Digdir.Library.Dialogporten.WebApiClient/Digdir.Library.Dialogporten.WebApiClient.csproj'
-#      source: 'https://api.nuget.org/v3/index.json'
-#    secrets:
-#      NUGET_API_KEY: ${{ secrets.NUGET_API_TEST_KEY }}
+  publish-sdk-to-nuget:
+    uses: ./.github/workflows/workflow-publish-nuget.yml
+    needs: [ get-current-version, check-for-changes ]
+    if: ${{ needs.check-for-changes.outputs.hasSwaggerSchemaChanges == 'true' }}
+    with:
+      version: ${{ needs.get-current-version.outputs.version }}
+      path: 'src/Digdir.Library.Dialogporten.WebApiClient/Digdir.Library.Dialogporten.WebApiClient.csproj'
+      source: 'https://api.nuget.org/v3/index.json'
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API__KEY }}
 
   store-apps-version:
     name: Store Latest Deployed Apps Version as GitHub Variable
